@@ -7,6 +7,7 @@
 #include <QLineEdit>
 #include <QVector>
 #include <QTimer>
+#include "channelallwindow.h"
 
 #define TIME_SPAN 5.0
 #define TIME_BORDER 0.0
@@ -48,6 +49,10 @@ private slots:
     void on_pushButton_clearLog_clicked();
 
     void on_pushButton_normalTest_clicked();
+    double minValue(double beginpoint, double endpoint, int channelIndex);
+    double maxValue(double beginpoint, double endpoint, int channelIndex);
+
+    void on_ChannelAllButton_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -60,6 +65,9 @@ private:
     QTimer replotTimer;
     bool decodingNewData();
     void log(QString &info);
+    int dataNum;
+    QVector<QVector<double>> sEMGdata;
+    ChannelAllWindow *cwin;
 };
 
 #endif // MAINWINDOW_H

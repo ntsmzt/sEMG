@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&serialPort,SIGNAL(readyRead()),this,SLOT(readyReadCallback()));
     connect(&replotTimer,SIGNAL(timeout()),this,SLOT(handleReplotTimerTimeout()));
 
+    cwin=new ChannelAllWindow(this);
+
     for(int i=1; i<=8; i++)
         ui->comboBox_channel->addItem(QString("Channel %1").arg(i));
     ui->comboBox_channel->setCurrentIndex(3);  //默认通道
@@ -35,6 +37,7 @@ void MainWindow::on_pushButton_open_clicked()
 
     counter = 0;
     setCustomPlotPattern();
+    cwin->setCustomPlotPattern(TIME_SPAN,TIME_BORDER);
     replotTimer.start(100); //10fps
     ui->statusBar->showMessage(tr("Open successed"));
 }
@@ -43,6 +46,12 @@ void MainWindow::readyReadCallback()
 {
     QByteArray r = serialPort.readAll();
     buffer.append(r);
+    for (int i=0;i<8;++i)
+    {
+        QVector<double> tmp;
+        sEMGdata.append(tmp);
+    }
+    dataNum=0;
     while(bufferDecoding());
 }
 
@@ -135,11 +144,15 @@ void MainWindow::setCustomPlotData(double t, double * channelVol)
     int channelIndex = ui->comboBox_channel->currentIndex();
     ui->customPlot->graph(0)->addData(t, channelVol[channelIndex]);
     if(t<TIME_SPAN)
+    {
         ui->customPlot->xAxis->setRange(0,TIME_SPAN+TIME_BORDER);
+        ui->customPlot->yAxis->setRange(minValue(1,dataNum,channelIndex),maxValue(1,dataNum,channelIndex));
+    }
     else
     {
         ui->customPlot->graph(0)->removeDataBefore(t-TIME_SPAN);
         ui->customPlot->xAxis->setRange(t-TIME_SPAN,t+TIME_BORDER);
+        ui->customPlot->yAxis->setRange(minValue(dataNum-TIME_SPAN*1250,dataNum,channelIndex),maxValue(dataNum-TIME_SPAN*1250,dataNum,channelIndex));
     }
 
     ui->lineEdit_channel->setText(QString("%1").arg(channelVol[channelIndex],0,'g',2));
@@ -183,6 +196,17 @@ bool MainWindow::decodingNewData()
     }
 
     double t = (counter++) / 250.0;
+
+    for(int i=0;i<8;++i)
+    {
+        sEMGdata[i].append(channelVal[i]);
+    }
+    dataNum++;
+
+    for(int i=0;i<8;++i)
+    {
+        cwin->setCustomPlotData(t,sEMGdata,TIME_SPAN,TIME_BORDER,dataNum);
+    }
     setCustomPlotData(t,channelVol);
     return true;
 }
@@ -248,4 +272,31 @@ void MainWindow::on_pushButton_normalTest_clicked()
     if (!serialPort.isOpen())
         return;
     serialPort.write((char *)cmd,1);
+}
+
+double MainWindow::minValue(double beginpoint, double endpoint, int channelIndex)
+{
+    double minimumValue=sEMGdata[channelIndex][beginpoint-1];
+    for (int i=beginpoint;i<endpoint;++i)
+    {
+        if (sEMGdata[channelIndex][i]<minimumValue)
+            minimumValue=sEMGdata[channelIndex][i];
+    }
+    return -0.04<minimumValue?-0.04:minimumValue;
+}
+
+double MainWindow::maxValue(double beginpoint, double endpoint, int channelIndex)
+{
+    double maximumValue=sEMGdata[channelIndex][beginpoint-1];
+    for (int i=beginpoint;i<endpoint;++i)
+    {
+        if (sEMGdata[channelIndex][i]>maximumValue)
+            maximumValue=sEMGdata[channelIndex][i];
+    }
+    return 0.04>maximumValue?0.04:maximumValue;
+}
+
+void MainWindow::on_ChannelAllButton_clicked()
+{
+    cwin->show();
 }

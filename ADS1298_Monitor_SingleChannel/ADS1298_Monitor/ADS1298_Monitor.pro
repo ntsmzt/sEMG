@@ -15,9 +15,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    qcustomplot.cpp
+    qcustomplot.cpp \
+    channelallwindow.cpp
 
 HEADERS  += mainwindow.h \
-    qcustomplot.h
+    qcustomplot.h \
+    channelallwindow.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    channelallwindow.ui
