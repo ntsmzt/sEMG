@@ -294,6 +294,19 @@
      <string>ChannelAll</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="savebutton">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>60</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Save</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -320,7 +333,7 @@
   <customwidget>
    <class>QCustomPlot</class>
    <extends>QWidget</extends>
-   <header>qcustomplot.h</header>
+   <header>plot/qcustomplot.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

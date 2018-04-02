@@ -54,6 +54,9 @@ private slots:
 
     void on_ChannelAllButton_clicked();
 
+    void on_savebutton_clicked();
+    int saveData(const QString &filename);
+
 private:
     Ui::MainWindow *ui;
     QSerialPort serialPort;

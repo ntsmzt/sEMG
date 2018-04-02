@@ -53,6 +53,7 @@ public:
     QLineEdit *lineEdit_channel;
     QComboBox *comboBox_channel;
     QPushButton *ChannelAllButton;
+    QPushButton *savebutton;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -128,6 +129,9 @@ public:
         ChannelAllButton = new QPushButton(centralWidget);
         ChannelAllButton->setObjectName(QStringLiteral("ChannelAllButton"));
         ChannelAllButton->setGeometry(QRect(880, 180, 75, 23));
+        savebutton = new QPushButton(centralWidget);
+        savebutton->setObjectName(QStringLiteral("savebutton"));
+        savebutton->setGeometry(QRect(890, 60, 75, 23));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -170,6 +174,7 @@ public:
         pushButton_beginReadC->setText(QApplication::translate("MainWindow", "Begin ReadC", 0));
         pushButton_normalTest->setText(QApplication::translate("MainWindow", "Normal Test", 0));
         ChannelAllButton->setText(QApplication::translate("MainWindow", "ChannelAll", 0));
+        savebutton->setText(QApplication::translate("MainWindow", "Save", 0));
     } // retranslateUi
 
 };

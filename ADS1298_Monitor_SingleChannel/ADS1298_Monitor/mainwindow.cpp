@@ -197,13 +197,13 @@ bool MainWindow::decodingNewData()
 
     double t = (counter++) / 250.0;
 
-    for(int i=0;i<8;++i)
+    for(int i=0;i<8;i++)
     {
         sEMGdata[i].append(channelVal[i]);
     }
     dataNum++;
 
-    for(int i=0;i<8;++i)
+    for(int i=0;i<8;i++)
     {
         cwin->setCustomPlotData(t,sEMGdata,TIME_SPAN,TIME_BORDER,dataNum);
     }
@@ -277,26 +277,71 @@ void MainWindow::on_pushButton_normalTest_clicked()
 double MainWindow::minValue(double beginpoint, double endpoint, int channelIndex)
 {
     double minimumValue=sEMGdata[channelIndex][beginpoint-1];
-    for (int i=beginpoint;i<endpoint;++i)
+    for (int i=beginpoint;i<endpoint;i++)
     {
         if (sEMGdata[channelIndex][i]<minimumValue)
             minimumValue=sEMGdata[channelIndex][i];
     }
+    minimumValue*=1.25;
     return -0.04<minimumValue?-0.04:minimumValue;
 }
 
 double MainWindow::maxValue(double beginpoint, double endpoint, int channelIndex)
 {
     double maximumValue=sEMGdata[channelIndex][beginpoint-1];
-    for (int i=beginpoint;i<endpoint;++i)
+    for (int i=beginpoint;i<endpoint;i++)
     {
         if (sEMGdata[channelIndex][i]>maximumValue)
             maximumValue=sEMGdata[channelIndex][i];
     }
+    maximumValue*=1.25;
     return 0.04>maximumValue?0.04:maximumValue;
 }
 
 void MainWindow::on_ChannelAllButton_clicked()
 {
     cwin->show();
+}
+
+void MainWindow::on_savebutton_clicked()
+{
+    QString fileName = QFileDialog::getSaveFileName(this,
+         tr("��������"),
+         "",
+         tr("�����ļ� (*.dat)"));
+    if (!fileName.isNull())
+    {
+        //fileName���ļ���
+        saveData(fileName);
+    }
+
+    else
+    {
+     //������ȡ??
+    }
+     return;
+}
+
+int MainWindow::saveData(const QString &filename)
+{
+    QFile f(filename);
+    if(!f.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+     printf("Open failed.");
+     return -1;
+    }
+    QTextStream txtOutput(&f);
+    txtOutput<<"counter"<<'\t';
+    for (int i=0;i<8;i++)
+        txtOutput<<"CH"<<i+1<<'\t';
+    txtOutput<<endl;
+    for (int i=0;i<sEMGdata[0].length();i++)
+    {
+        txtOutput<<i+1<<'\t';
+        for (int j=0;j<8;j++)
+            txtOutput<<sEMGdata[j][i]<<'\t';
+        txtOutput<<endl;
+    }
+    f.close();
+    return 0;
 }

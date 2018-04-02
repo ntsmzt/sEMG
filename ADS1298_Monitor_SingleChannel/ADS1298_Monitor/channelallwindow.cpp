@@ -69,27 +69,28 @@ void ChannelAllWindow::setCustomPlotData(double t, QVector<QVector<double>> sEMG
         }
         customPlot[i]->replot();
     }
-
 }
 
 double ChannelAllWindow::minValue(double beginpoint, double endpoint, int channelIndex, QVector<QVector<double>> sEMGdata)
 {
     double minimumValue=sEMGdata[channelIndex][beginpoint-1];
-    for (int i=beginpoint;i<endpoint;++i)
+    for (int i=beginpoint;i<endpoint;i++)
     {
         if (sEMGdata[channelIndex][i]<minimumValue)
             minimumValue=sEMGdata[channelIndex][i];
     }
+    minimumValue*=1.25;
     return -0.04<minimumValue?-0.04:minimumValue;
 }
 
 double ChannelAllWindow::maxValue(double beginpoint, double endpoint, int channelIndex, QVector<QVector<double>> sEMGdata)
 {
     double maximumValue=sEMGdata[channelIndex][beginpoint-1];
-    for (int i=beginpoint;i<endpoint;++i)
+    for (int i=beginpoint;i<endpoint;i++)
     {
         if (sEMGdata[channelIndex][i]>maximumValue)
             maximumValue=sEMGdata[channelIndex][i];
     }
+    maximumValue*=1.25;
     return 0.04>maximumValue?0.04:maximumValue;
 }
