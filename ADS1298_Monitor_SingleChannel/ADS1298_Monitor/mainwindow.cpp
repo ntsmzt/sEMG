@@ -50,8 +50,20 @@ void MainWindow::readyReadCallback()
     {
         QVector<double> tmp;
         sEMGdata.append(tmp);
+        filteredsEMGdata.append(tmp);
     }
     dataNum=0;
+    static double ahp[1]={1.0f};
+    static double bhp[5]={0.0627402311,-0.2499714735,0.3744644353,-0.24997147355,0.062740231119};
+    static double anotch[7]={1.000000000000000,-1.699163423921474,3.464263380095651,-3.035006841250400,
+                         2.930889612822229,-1.213689963509197,0.604109699507278};
+    static double bnotch[7]={0.777337677403281,-1.441206975301750,3.222510786578553,-3.065671614896859,
+                         3.222258852356618,-1.440981638482467,0.777155376086710};
+    for (int i=0;i<8;i++)
+    {
+        hpfilters[i].initFilter(ahp,bhp,1,5);
+        notchfilters[i].initFilter(anotch,bnotch,7,7);
+    }
     while(bufferDecoding());
 }
 
@@ -200,12 +212,15 @@ bool MainWindow::decodingNewData()
     for(int i=0;i<8;i++)
     {
         sEMGdata[i].append(channelVal[i]);
+        double filteredData=notchfilters[i].filter(channelVal[i]);
+        filteredData=hpfilters[i].filter(filteredData);
+        filteredsEMGdata[i].append(filteredData);
     }
     dataNum++;
 
     for(int i=0;i<8;i++)
     {
-        cwin->setCustomPlotData(t,sEMGdata,TIME_SPAN,TIME_BORDER,dataNum);
+        cwin->setCustomPlotData(t,filteredsEMGdata,TIME_SPAN,TIME_BORDER,dataNum);
     }
     setCustomPlotData(t,channelVol);
     return true;
@@ -276,11 +291,11 @@ void MainWindow::on_pushButton_normalTest_clicked()
 
 double MainWindow::minValue(double beginpoint, double endpoint, int channelIndex)
 {
-    double minimumValue=sEMGdata[channelIndex][beginpoint-1];
+    double minimumValue=filteredsEMGdata[channelIndex][beginpoint-1];
     for (int i=beginpoint;i<endpoint;i++)
     {
-        if (sEMGdata[channelIndex][i]<minimumValue)
-            minimumValue=sEMGdata[channelIndex][i];
+        if (filteredsEMGdata[channelIndex][i]<minimumValue)
+            minimumValue=filteredsEMGdata[channelIndex][i];
     }
     minimumValue*=1.25;
     return -0.04<minimumValue?-0.04:minimumValue;
@@ -288,11 +303,11 @@ double MainWindow::minValue(double beginpoint, double endpoint, int channelIndex
 
 double MainWindow::maxValue(double beginpoint, double endpoint, int channelIndex)
 {
-    double maximumValue=sEMGdata[channelIndex][beginpoint-1];
+    double maximumValue=filteredsEMGdata[channelIndex][beginpoint-1];
     for (int i=beginpoint;i<endpoint;i++)
     {
-        if (sEMGdata[channelIndex][i]>maximumValue)
-            maximumValue=sEMGdata[channelIndex][i];
+        if (filteredsEMGdata[channelIndex][i]>maximumValue)
+            maximumValue=filteredsEMGdata[channelIndex][i];
     }
     maximumValue*=1.25;
     return 0.04>maximumValue?0.04:maximumValue;
@@ -308,13 +323,12 @@ void MainWindow::on_savebutton_clicked()
     QString fileName = QFileDialog::getSaveFileName(this,
          tr("��������"),
          "",
-         tr("�����ļ� (*.dat)"));
+         tr("�����ļ�"));
     if (!fileName.isNull())
     {
         //fileName���ļ���
         saveData(fileName);
     }
-
     else
     {
      //������ȡ??
@@ -322,26 +336,49 @@ void MainWindow::on_savebutton_clicked()
      return;
 }
 
-int MainWindow::saveData(const QString &filename)
+int MainWindow::saveData(QString &filename)
 {
-    QFile f(filename);
-    if(!f.open(QIODevice::WriteOnly | QIODevice::Text))
+    QString rawdatafilename=filename+".rawdat";
+    QString filtereddatafilename=filename+".filtereddat";
+    QFile frawdata(rawdatafilename);
+    if(!frawdata.open(QIODevice::WriteOnly | QIODevice::Text))
     {
      printf("Open failed.");
      return -1;
     }
-    QTextStream txtOutput(&f);
-    txtOutput<<"counter"<<'\t';
-    for (int i=0;i<8;i++)
-        txtOutput<<"CH"<<i+1<<'\t';
-    txtOutput<<endl;
+    QFile ffiltereddata(filtereddatafilename);
+    if(!ffiltereddata.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+     printf("Open failed.");
+     return -1;
+    }
+
+    QTextStream txtOutputrawdata(&frawdata);
+    QTextStream txtOutputfiltereddata(&ffiltereddata);
+    txtOutputrawdata<<"counter"<<'\t';
+    txtOutputfiltereddata<<"counter"<<'\t';
+    for (int i=0;i<8;i++){
+        txtOutputrawdata<<"CH"<<i+1<<'\t';
+        txtOutputfiltereddata<<"CH"<<i+1<<'\t';
+    }
+    txtOutputrawdata<<endl;
+    txtOutputfiltereddata<<endl;
     for (int i=0;i<sEMGdata[0].length();i++)
     {
-        txtOutput<<i+1<<'\t';
+        txtOutputrawdata<<i+1<<'\t';
         for (int j=0;j<8;j++)
-            txtOutput<<sEMGdata[j][i]<<'\t';
-        txtOutput<<endl;
+            txtOutputrawdata<<sEMGdata[j][i]<<'\t';
+        txtOutputrawdata<<endl;
     }
-    f.close();
+    for (int i=0;i<filteredsEMGdata[0].length();i++)
+    {
+        txtOutputfiltereddata<<i+1<<'\t';
+        for (int j=0;j<8;j++)
+            txtOutputfiltereddata<<filteredsEMGdata[j][i]<<'\t';
+        txtOutputfiltereddata<<endl;
+    }
+    frawdata.close();
+    ffiltereddata.close();;
+
     return 0;
 }

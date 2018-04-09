@@ -8,6 +8,7 @@
 #include <QVector>
 #include <QTimer>
 #include "channelallwindow.h"
+#include "iirfilter.h"
 
 #define TIME_SPAN 5.0
 #define TIME_BORDER 0.0
@@ -55,7 +56,7 @@ private slots:
     void on_ChannelAllButton_clicked();
 
     void on_savebutton_clicked();
-    int saveData(const QString &filename);
+    int saveData(QString &filename);
 
 private:
     Ui::MainWindow *ui;
@@ -70,7 +71,10 @@ private:
     void log(QString &info);
     int dataNum;
     QVector<QVector<double>> sEMGdata;
+    QVector<QVector<double>> filteredsEMGdata;
     ChannelAllWindow *cwin;
+    IIRFilter notchfilters[8];
+    IIRFilter hpfilters[8];
 };
 
 #endif // MAINWINDOW_H

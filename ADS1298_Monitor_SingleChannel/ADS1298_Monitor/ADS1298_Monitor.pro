@@ -16,11 +16,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     qcustomplot.cpp \
-    channelallwindow.cpp
+    channelallwindow.cpp \
+    irrfilter.cpp
 
 HEADERS  += mainwindow.h \
     qcustomplot.h \
-    channelallwindow.h
+    channelallwindow.h \
+    iirfilter.h
 
 FORMS    += mainwindow.ui \
     channelallwindow.ui

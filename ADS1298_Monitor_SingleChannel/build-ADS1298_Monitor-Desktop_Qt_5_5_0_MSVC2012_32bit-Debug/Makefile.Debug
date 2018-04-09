@@ -46,23 +46,27 @@ OBJECTS_DIR   = debug
 SOURCES       = ..\ADS1298_Monitor\main.cpp \
 		..\ADS1298_Monitor\mainwindow.cpp \
 		..\ADS1298_Monitor\qcustomplot.cpp \
-		..\ADS1298_Monitor\channelallwindow.cpp debug\moc_mainwindow.cpp \
+		..\ADS1298_Monitor\channelallwindow.cpp \
+		..\ADS1298_Monitor\irrfilter.cpp debug\moc_mainwindow.cpp \
 		debug\moc_qcustomplot.cpp \
 		debug\moc_channelallwindow.cpp
 OBJECTS       = debug\main.obj \
 		debug\mainwindow.obj \
 		debug\qcustomplot.obj \
 		debug\channelallwindow.obj \
+		debug\irrfilter.obj \
 		debug\moc_mainwindow.obj \
 		debug\moc_qcustomplot.obj \
 		debug\moc_channelallwindow.obj
 
 DIST          =  ..\ADS1298_Monitor\mainwindow.h \
 		..\ADS1298_Monitor\qcustomplot.h \
-		..\ADS1298_Monitor\channelallwindow.h ..\ADS1298_Monitor\main.cpp \
+		..\ADS1298_Monitor\channelallwindow.h \
+		..\ADS1298_Monitor\iirfilter.h ..\ADS1298_Monitor\main.cpp \
 		..\ADS1298_Monitor\mainwindow.cpp \
 		..\ADS1298_Monitor\qcustomplot.cpp \
-		..\ADS1298_Monitor\channelallwindow.cpp
+		..\ADS1298_Monitor\channelallwindow.cpp \
+		..\ADS1298_Monitor\irrfilter.cpp
 QMAKE_TARGET  = ADS1298_Monitor
 DESTDIR        = debug\ #avoid trailing-slash linebreak
 TARGET         = ADS1298_Monitor.exe
@@ -163,7 +167,7 @@ dist:
 	$(ZIP) ADS1298_Monitor.zip $(SOURCES) $(DIST) ..\ADS1298_Monitor\ADS1298_Monitor.pro C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\spec_pre.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\common\msvc-desktop.conf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\qconfig.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_3dcore.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_3dcore_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_3dinput.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_3dinput_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_3dquick.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_3dquick_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_3dquickrenderer.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_3dquickrenderer_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_3drenderer.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_3drenderer_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_axbase.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_axbase_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_axcontainer.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_axcontainer_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_axserver.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_axserver_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_bluetooth.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_bluetooth_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_bootstrap_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_clucene_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_concurrent.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_concurrent_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_core.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_core_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_dbus.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_dbus_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_declarative.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_declarative_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_designer.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_designer_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_designercomponents_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_enginio.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_enginio_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_gui.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_gui_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_help.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_help_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_location.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_location_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_multimedia.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_multimedia_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_multimediawidgets.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_multimediawidgets_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_network.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_network_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_nfc.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_nfc_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_opengl.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_opengl_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_openglextensions.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_openglextensions_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_platformsupport_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_positioning.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_positioning_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_printsupport.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_printsupport_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_qml.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_qml_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_qmldevtools_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_qmltest.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_qmltest_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_quick.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_quick_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_quickparticles_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_quickwidgets.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_quickwidgets_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_script.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_script_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_scripttools.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_scripttools_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_sensors.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_sensors_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_serialport.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_serialport_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_sql.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_sql_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_svg.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_svg_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_testlib.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_testlib_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_uiplugin.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_uitools.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_uitools_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_webchannel.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_webchannel_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_webkit.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_webkit_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_webkitwidgets.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_webkitwidgets_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_websockets.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_websockets_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_widgets.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_widgets_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_winextras.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_winextras_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_xml.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_xml_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_xmlpatterns.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\modules\qt_lib_xmlpatterns_private.pri C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\qt_functions.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\qt_config.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\win32\qt_config.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\win32-msvc2012\qmake.conf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\spec_post.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\exclusive_builds.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\default_pre.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\win32\default_pre.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\resolve_config.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\exclusive_builds_post.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\default_post.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\build_pass.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\win32\rtti.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\c++11.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\precompile_header.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\warn_on.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\qt.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\resources.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\moc.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\win32\opengl.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\uic.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\win32\windows.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\testcase_targets.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\exceptions.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\yacc.prf C:\Qt\Qt5.5.0\5.5\msvc2012\mkspecs\features\lex.prf ..\ADS1298_Monitor\ADS1298_Monitor.pro C:/Qt/Qt5.5.0/5.5/msvc2012/lib/qtmaind.prl C:/Qt/Qt5.5.0/5.5/msvc2012/lib/Qt5PrintSupportd.prl C:/Qt/Qt5.5.0/5.5/msvc2012/lib/Qt5Widgetsd.prl C:/Qt/Qt5.5.0/5.5/msvc2012/lib/Qt5Guid.prl C:/Qt/Qt5.5.0/5.5/msvc2012/lib/Qt5SerialPortd.prl C:/Qt/Qt5.5.0/5.5/msvc2012/lib/Qt5Cored.prl  NO_PCH_SOURCES RESOURCES HEADERS SOURCES OBJECTIVE_SOURCES FORMS YACCSOURCES YACCSOURCES LEXSOURCES 
 
 clean: compiler_clean 
-	-$(DEL_FILE) debug\main.obj debug\mainwindow.obj debug\qcustomplot.obj debug\channelallwindow.obj debug\moc_mainwindow.obj debug\moc_qcustomplot.obj debug\moc_channelallwindow.obj
+	-$(DEL_FILE) debug\main.obj debug\mainwindow.obj debug\qcustomplot.obj debug\channelallwindow.obj debug\irrfilter.obj debug\moc_mainwindow.obj debug\moc_qcustomplot.obj debug\moc_channelallwindow.obj
 	-$(DEL_FILE) debug\ADS1298_Monitor.exp debug\ADS1298_Monitor.ilk debug\ADS1298_Monitor.idb debug\ADS1298_Monitor.exe.embed.manifest debug\ADS1298_Monitor.exe_manifest.rc debug\ADS1298_Monitor.exe_manifest.res
 
 distclean: clean 
@@ -675,6 +679,7 @@ debug\moc_mainwindow.cpp: C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtWidgets\QMainWind
 		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtWidgets\QLineEdit \
 		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\QTimer \
 		..\ADS1298_Monitor\channelallwindow.h \
+		..\ADS1298_Monitor\iirfilter.h \
 		..\ADS1298_Monitor\mainwindow.h
 	C:\Qt\Qt5.5.0\5.5\msvc2012\bin\moc.exe $(DEFINES) -D_MSC_VER=1700 -D_WIN32 -IC:/Qt/Qt5.5.0/5.5/msvc2012/mkspecs/win32-msvc2012 -ID:/wuze/sEMG_git/ADS1298_Monitor_SingleChannel/ADS1298_Monitor -IC:/Qt/Qt5.5.0/5.5/msvc2012/include -IC:/Qt/Qt5.5.0/5.5/msvc2012/include/QtPrintSupport -IC:/Qt/Qt5.5.0/5.5/msvc2012/include/QtWidgets -IC:/Qt/Qt5.5.0/5.5/msvc2012/include/QtGui -IC:/Qt/Qt5.5.0/5.5/msvc2012/include/QtANGLE -IC:/Qt/Qt5.5.0/5.5/msvc2012/include/QtSerialPort -IC:/Qt/Qt5.5.0/5.5/msvc2012/include/QtCore -I. ..\ADS1298_Monitor\mainwindow.h -o debug\moc_mainwindow.cpp
 
@@ -2651,6 +2656,7 @@ debug\main.obj: ..\ADS1298_Monitor\main.cpp ../ADS1298_Monitor/mainwindow.h \
 		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtWidgets\QLineEdit \
 		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\QTimer \
 		../ADS1298_Monitor/channelallwindow.h \
+		../ADS1298_Monitor/iirfilter.h \
 		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtWidgets\QApplication
 
 debug\mainwindow.obj: ..\ADS1298_Monitor\mainwindow.cpp ../ADS1298_Monitor/mainwindow.h \
@@ -3145,6 +3151,7 @@ debug\mainwindow.obj: ..\ADS1298_Monitor\mainwindow.cpp ../ADS1298_Monitor/mainw
 		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtWidgets\QLineEdit \
 		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\QTimer \
 		../ADS1298_Monitor/channelallwindow.h \
+		../ADS1298_Monitor/iirfilter.h \
 		ui_mainwindow.h \
 		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtWidgets\QAction \
 		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtWidgets\QApplication \
@@ -4139,6 +4146,51 @@ debug\channelallwindow.obj: ..\ADS1298_Monitor\channelallwindow.cpp ../ADS1298_M
 		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtWidgets\QLabel \
 		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtWidgets\QMenuBar \
 		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtWidgets\QStatusBar
+
+debug\irrfilter.obj: ..\ADS1298_Monitor\irrfilter.cpp ../ADS1298_Monitor/iirfilter.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\QList \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qlist.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qalgorithms.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qglobal.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qconfig.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qfeatures.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qsystemdetection.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qprocessordetection.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qcompilerdetection.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qtypeinfo.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qtypetraits.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qsysinfo.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qlogging.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qflags.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qatomic.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qbasicatomic.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qatomic_bootstrap.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qgenericatomic.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qatomic_cxx11.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qatomic_gcc.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qatomic_msvc.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qatomic_armv7.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qatomic_armv6.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qatomic_armv5.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qatomic_ia64.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qatomic_mips.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qatomic_x86.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qatomic_unix.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qglobalstatic.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qmutex.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qnumeric.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qiterator.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qrefcount.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qarraydata.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qbytearraylist.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qbytearray.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qnamespace.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qstring.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qchar.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qstringbuilder.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qstringlist.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qregexp.h \
+		C:\Qt\Qt5.5.0\5.5\msvc2012\include\QtCore\qstringmatcher.h
 
 debug\moc_mainwindow.obj: debug\moc_mainwindow.cpp 
 

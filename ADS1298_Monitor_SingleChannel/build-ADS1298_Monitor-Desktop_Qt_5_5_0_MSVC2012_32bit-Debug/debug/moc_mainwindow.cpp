@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[25];
-    char stringdata0[526];
+    QByteArrayData data[26];
+    char stringdata0[535];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -53,7 +53,8 @@ QT_MOC_LITERAL(20, 449, 8), // "maxValue"
 QT_MOC_LITERAL(21, 458, 27), // "on_ChannelAllButton_clicked"
 QT_MOC_LITERAL(22, 486, 21), // "on_savebutton_clicked"
 QT_MOC_LITERAL(23, 508, 8), // "saveData"
-QT_MOC_LITERAL(24, 517, 8) // "filename"
+QT_MOC_LITERAL(24, 517, 8), // "QString&"
+QT_MOC_LITERAL(25, 526, 8) // "filename"
 
     },
     "MainWindow\0on_pushButton_open_clicked\0"
@@ -70,7 +71,8 @@ QT_MOC_LITERAL(24, 517, 8) // "filename"
     "on_pushButton_normalTest_clicked\0"
     "minValue\0beginpoint\0endpoint\0channelIndex\0"
     "maxValue\0on_ChannelAllButton_clicked\0"
-    "on_savebutton_clicked\0saveData\0filename"
+    "on_savebutton_clicked\0saveData\0QString&\0"
+    "filename"
 };
 #undef QT_MOC_LITERAL
 
@@ -127,7 +129,7 @@ static const uint qt_meta_data_MainWindow[] = {
     QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Int,   17,   18,   19,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Int, QMetaType::QString,   24,
+    QMetaType::Int, 0x80000000 | 24,   25,
 
        0        // eod
 };
@@ -158,7 +160,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
             if (_a[0]) *reinterpret_cast< double*>(_a[0]) = _r; }  break;
         case 16: _t->on_ChannelAllButton_clicked(); break;
         case 17: _t->on_savebutton_clicked(); break;
-        case 18: { int _r = _t->saveData((*reinterpret_cast< const QString(*)>(_a[1])));
+        case 18: { int _r = _t->saveData((*reinterpret_cast< QString(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
         default: ;
         }
