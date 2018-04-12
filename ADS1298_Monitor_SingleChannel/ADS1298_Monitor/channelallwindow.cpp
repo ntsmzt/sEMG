@@ -51,7 +51,7 @@ void ChannelAllWindow::setCustomPlotPattern(double TIME_SPAN, double TIME_BORDER
 
 }
 
-void ChannelAllWindow::setCustomPlotData(double t, QVector<QVector<double>> sEMGdata, double TIME_SPAN, double TIME_BORDER, int dataNum)
+void ChannelAllWindow::setCustomPlotData(double t, QVector< QVector<double> > sEMGdata, double TIME_SPAN, double TIME_BORDER, int dataNum)
 {
     for(int i=0; i<8; i++)
     {
@@ -65,13 +65,13 @@ void ChannelAllWindow::setCustomPlotData(double t, QVector<QVector<double>> sEMG
         {
             customPlot[i]->graph(0)->removeDataBefore(t-TIME_SPAN);
             customPlot[i]->xAxis->setRange(t-TIME_SPAN,t+TIME_BORDER);
-            customPlot[i]->yAxis->setRange(minValue(dataNum-TIME_SPAN*1250,dataNum,i,sEMGdata),maxValue(dataNum-TIME_SPAN*1250,dataNum,i,sEMGdata));
+            customPlot[i]->yAxis->setRange(minValue(dataNum-1250,dataNum,i,sEMGdata),maxValue(dataNum-1250,dataNum,i,sEMGdata));
         }
         customPlot[i]->replot();
     }
 }
 
-double ChannelAllWindow::minValue(double beginpoint, double endpoint, int channelIndex, QVector<QVector<double>> sEMGdata)
+double ChannelAllWindow::minValue(double beginpoint, double endpoint, int channelIndex, QVector< QVector<double> > sEMGdata)
 {
     double minimumValue=sEMGdata[channelIndex][beginpoint-1];
     for (int i=beginpoint;i<endpoint;i++)
@@ -83,7 +83,7 @@ double ChannelAllWindow::minValue(double beginpoint, double endpoint, int channe
     return -0.04<minimumValue?-0.04:minimumValue;
 }
 
-double ChannelAllWindow::maxValue(double beginpoint, double endpoint, int channelIndex, QVector<QVector<double>> sEMGdata)
+double ChannelAllWindow::maxValue(double beginpoint, double endpoint, int channelIndex, QVector< QVector<double> > sEMGdata)
 {
     double maximumValue=sEMGdata[channelIndex][beginpoint-1];
     for (int i=beginpoint;i<endpoint;i++)

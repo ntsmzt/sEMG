@@ -18,13 +18,30 @@ MainWindow::MainWindow(QWidget *parent) :
 
     handleFreshPort();
 
+    for (int i=0;i<8;++i)
+    {
+        QVector<double> tmp;
+        sEMGdata.append(tmp);
+        filteredsEMGdata.append(tmp);
+    }
+    dataNum=0;
+    static double ahp[1]={1.0f};
+    static double bhp[5]={0.0627402311,-0.2499714735,0.3744644353,-0.24997147355,0.062740231119};
+    static double anotch[7]={1.000000000000000,-1.699163423921474,3.464263380095651,-3.035006841250400,
+                         2.930889612822229,-1.213689963509197,0.604109699507278};
+    static double bnotch[7]={0.777337677403281,-1.441206975301750,3.222510786578553,-3.065671614896859,
+                         3.222258852356618,-1.440981638482467,0.777155376086710};
+    for (int i=0;i<8;i++)
+    {
+        hpfilters[i].initFilter(ahp,bhp,1,5);
+        notchfilters[i].initFilter(anotch,bnotch,7,7);
+    }
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-
 
 void MainWindow::on_pushButton_open_clicked()
 {
@@ -44,26 +61,9 @@ void MainWindow::on_pushButton_open_clicked()
 
 void MainWindow::readyReadCallback()
 {
+    //qDebug()<<"readyReadCallback"<<endl;
     QByteArray r = serialPort.readAll();
-    buffer.append(r);
-    for (int i=0;i<8;++i)
-    {
-        QVector<double> tmp;
-        sEMGdata.append(tmp);
-        filteredsEMGdata.append(tmp);
-    }
-    dataNum=0;
-    static double ahp[1]={1.0f};
-    static double bhp[5]={0.0627402311,-0.2499714735,0.3744644353,-0.24997147355,0.062740231119};
-    static double anotch[7]={1.000000000000000,-1.699163423921474,3.464263380095651,-3.035006841250400,
-                         2.930889612822229,-1.213689963509197,0.604109699507278};
-    static double bnotch[7]={0.777337677403281,-1.441206975301750,3.222510786578553,-3.065671614896859,
-                         3.222258852356618,-1.440981638482467,0.777155376086710};
-    for (int i=0;i<8;i++)
-    {
-        hpfilters[i].initFilter(ahp,bhp,1,5);
-        notchfilters[i].initFilter(anotch,bnotch,7,7);
-    }
+    buffer.append(r);    
     while(bufferDecoding());
 }
 
@@ -99,6 +99,7 @@ void MainWindow::handleFreshPort()
 
 bool MainWindow::bufferDecoding()
 {
+    //qDebug()<<"bufferDecoding"<<endl;
     QByteArray packageHead;
     packageHead.append(0xff);
     packageHead.append(0xff);
@@ -118,15 +119,16 @@ bool MainWindow::bufferDecoding()
         value = buffer[3];
         check = buffer[4];
         if(check==value) //数据正确
-            log(QString::number(value));
+            log( QString::number(value) );
         else
-            log(tr("ERROR!"));
+            log( tr("ERROR!") );
         buffer.remove(0,5);
         return true;
     }
 
     if(buffer.length()>=31 && cmd==0x01) //数据命令
     {
+       // qDebug()<<"data"<<endl;
         decodingNewData();
         return true;
     }
@@ -164,7 +166,7 @@ void MainWindow::setCustomPlotData(double t, double * channelVol)
     {
         ui->customPlot->graph(0)->removeDataBefore(t-TIME_SPAN);
         ui->customPlot->xAxis->setRange(t-TIME_SPAN,t+TIME_BORDER);
-        ui->customPlot->yAxis->setRange(minValue(dataNum-TIME_SPAN*1250,dataNum,channelIndex),maxValue(dataNum-TIME_SPAN*1250,dataNum,channelIndex));
+        ui->customPlot->yAxis->setRange(minValue(dataNum-1250,dataNum,channelIndex),maxValue(dataNum-1250,dataNum,channelIndex));
     }
 
     ui->lineEdit_channel->setText(QString("%1").arg(channelVol[channelIndex],0,'g',2));
@@ -186,15 +188,16 @@ bool MainWindow::decodingNewData()
         }
         if( (data[0]&0x80)!=0x80 ) //最高位为0，表示输出为整数
         {
-            unsigned int val = (unsigned int(data[0])<<16) | (unsigned int(data[1])<<8) | (unsigned int(data[2]));
+            unsigned int val = ((unsigned int)(data[0])<<16) | ((unsigned int)(data[1])<<8) | ((unsigned int)(data[2]));
             channelVal[i] = val;
         }
         else //最高位为1，输出为负数，需要转化为补码
         {
-            unsigned int val = 0xff000000 | (unsigned int(data[0])<<16) | (unsigned int(data[1])<<8) | (unsigned int(data[2])); //取符号位之后的数值
+            unsigned int val = 0xff000000 | ((unsigned int)(data[0])<<16) | ((unsigned int)(data[1])<<8) | ((unsigned int)(data[2])); //取符号位之后的数值
             channelVal[i] =val;
         }
     }
+
     unsigned char check = buffer[30];
     buffer.remove(0,31);//移除数据
 
@@ -205,28 +208,28 @@ bool MainWindow::decodingNewData()
     for(int i=0; i<8; i++)
     {
         channelVol[i] = double(channelVal[i]) / 0x7FFFFE * 3.3; //转化为电压值
+        //qDebug()<<i<<'\t'<<channelVol[i]<<endl;
     }
 
     double t = (counter++) / 250.0;
-
-    for(int i=0;i<8;i++)
-    {
-        sEMGdata[i].append(channelVal[i]);
-        double filteredData=notchfilters[i].filter(channelVal[i]);
-        filteredData=hpfilters[i].filter(filteredData);
-        filteredsEMGdata[i].append(filteredData);
-    }
     dataNum++;
-
+    double filteredchannelVol[8];
     for(int i=0;i<8;i++)
     {
-        cwin->setCustomPlotData(t,filteredsEMGdata,TIME_SPAN,TIME_BORDER,dataNum);
+        sEMGdata[i].append(channelVol[i]);
+        double filteredData=notchfilters[i].filter(channelVol[i]);
+        filteredchannelVol[i]=hpfilters[i].filter(filteredData);
+        if (dataNum>50)
+            filteredchannelVol[i]=waveletfilter[i].filter(filteredchannelVol[i]);
+        filteredsEMGdata[i].append(filteredchannelVol[i]);
     }
-    setCustomPlotData(t,channelVol);
+
+    setCustomPlotData(t,filteredchannelVol);
+    cwin->setCustomPlotData(t,filteredsEMGdata,TIME_SPAN,TIME_BORDER,dataNum);
     return true;
 }
 
-void MainWindow::log(QString &info)
+void MainWindow::log(QString info)
 {
     ui->textBrowser_log->append(info);
 }
@@ -355,6 +358,7 @@ int MainWindow::saveData(QString &filename)
 
     QTextStream txtOutputrawdata(&frawdata);
     QTextStream txtOutputfiltereddata(&ffiltereddata);
+    /*
     txtOutputrawdata<<"counter"<<'\t';
     txtOutputfiltereddata<<"counter"<<'\t';
     for (int i=0;i<8;i++){
@@ -363,6 +367,7 @@ int MainWindow::saveData(QString &filename)
     }
     txtOutputrawdata<<endl;
     txtOutputfiltereddata<<endl;
+    */
     for (int i=0;i<sEMGdata[0].length();i++)
     {
         txtOutputrawdata<<i+1<<'\t';

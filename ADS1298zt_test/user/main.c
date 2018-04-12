@@ -15,8 +15,8 @@ int main(void)
 	resetADS1298();
 	
 	//configForNoiseTest(); 
-	//configForNormalMeasurement();
-	configForSquarewaveTest();
+	configForNormalMeasurement();
+	//configForSquarewaveTest();
 	//Read_CH();
 	//delayMs(40000);
 	

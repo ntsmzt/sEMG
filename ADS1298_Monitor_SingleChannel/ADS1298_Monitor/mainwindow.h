@@ -9,6 +9,7 @@
 #include <QTimer>
 #include "channelallwindow.h"
 #include "iirfilter.h"
+#include "waveletfilter.h"
 
 #define TIME_SPAN 5.0
 #define TIME_BORDER 0.0
@@ -68,13 +69,14 @@ private:
     int counter;
     QTimer replotTimer;
     bool decodingNewData();
-    void log(QString &info);
+    void log(QString info);
     int dataNum;
-    QVector<QVector<double>> sEMGdata;
-    QVector<QVector<double>> filteredsEMGdata;
+    QVector< QVector<double> > sEMGdata;
+    QVector< QVector<double> > filteredsEMGdata;
     ChannelAllWindow *cwin;
     IIRFilter notchfilters[8];
     IIRFilter hpfilters[8];
+    WaveletFilter waveletfilter[8];
 };
 
 #endif // MAINWINDOW_H

@@ -17,12 +17,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     qcustomplot.cpp \
     channelallwindow.cpp \
-    irrfilter.cpp
+    irrfilter.cpp \
+    waveletfilter.cpp
 
 HEADERS  += mainwindow.h \
     qcustomplot.h \
     channelallwindow.h \
-    iirfilter.h
+    iirfilter.h \
+    waveletfilter.h
 
 FORMS    += mainwindow.ui \
     channelallwindow.ui

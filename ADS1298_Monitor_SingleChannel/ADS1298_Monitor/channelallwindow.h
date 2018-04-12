@@ -17,9 +17,9 @@ public:
     explicit ChannelAllWindow(QWidget *parent = 0);
     ~ChannelAllWindow();
     void setCustomPlotPattern(double TIME_SPAN, double TIME_BORDER);
-    void setCustomPlotData(double t, QVector<QVector<double>> sEMGdata, double TIME_SPAN, double TIME_BORDER, int dataNum);
-    double minValue(double beginpoint, double endpoint, int channelIndex, QVector<QVector<double>> sEMGdata);
-    double maxValue(double beginpoint, double endpoint, int channelIndex, QVector<QVector<double>> sEMGdata);
+    void setCustomPlotData(double t, QVector< QVector<double> > sEMGdata, double TIME_SPAN, double TIME_BORDER, int dataNum);
+    double minValue(double beginpoint, double endpoint, int channelIndex, QVector< QVector<double> > sEMGdata);
+    double maxValue(double beginpoint, double endpoint, int channelIndex, QVector< QVector<double> > sEMGdata);
 
 private slots:
 
