@@ -14,16 +14,30 @@ MainWindow::MainWindow(QWidget *parent) :
 
     for(int i=1; i<=8; i++)
         ui->comboBox_channel->addItem(QString("Channel %1").arg(i));
-    ui->comboBox_channel->setCurrentIndex(3);  //默认通道
+    ui->comboBox_channel->setCurrentIndex(0);  //默认通道1
+
+    for (int i=1;i<=6;i++)
+        ui->comboBox_db->addItem(QString("dB%1").arg(i));
+    ui->comboBox_db->setCurrentIndex(2); //默认db3
+
+    for (int i=1;i<=5;i++)
+        ui->comboBox_delevel->addItem(QString("j= %1").arg(i));
+    ui->comboBox_delevel->setCurrentIndex(2); //默认j=3
+
+    for (int i=1;i<=10;i++)
+        ui->comboBox_MaxSignalLen->addItem(QString("MaxSigLen= %3").arg(i*10));
+    ui->comboBox_MaxSignalLen->setCurrentIndex(4); //默认MaxSigLen=50
 
     handleFreshPort();
 
+    /*
     for (int i=0;i<8;++i)
     {
         QVector<double> tmp;
         sEMGdata.append(tmp);
         filteredsEMGdata.append(tmp);
     }
+    */
     dataNum=0;
     static double ahp[1]={1.0f};
     static double bhp[5]={0.0627402311,-0.2499714735,0.3744644353,-0.24997147355,0.062740231119};
@@ -157,19 +171,31 @@ void MainWindow::setCustomPlotData(double t, double * channelVol)
 {
     int channelIndex = ui->comboBox_channel->currentIndex();
     ui->customPlot->graph(0)->addData(t, channelVol[channelIndex]);
+    double lowerbound[8],upperbound[8];
     if(t<TIME_SPAN)
     {
         ui->customPlot->xAxis->setRange(0,TIME_SPAN+TIME_BORDER);
-        ui->customPlot->yAxis->setRange(minValue(1,dataNum,channelIndex),maxValue(1,dataNum,channelIndex));
+        for (int i=0;i<8;i++)
+        {
+            lowerbound[i]=minValue(1,dataNum,i);
+            upperbound[i]=maxValue(1,dataNum,i);
+        }
     }
     else
     {
         ui->customPlot->graph(0)->removeDataBefore(t-TIME_SPAN);
         ui->customPlot->xAxis->setRange(t-TIME_SPAN,t+TIME_BORDER);
-        ui->customPlot->yAxis->setRange(minValue(dataNum-1250,dataNum,channelIndex),maxValue(dataNum-1250,dataNum,channelIndex));
+        for (int i=0;i<6;i++)
+        {
+            lowerbound[i]=minValue(dataNum-1250,dataNum,channelIndex);
+            upperbound[i]=maxValue(dataNum-1250,dataNum,channelIndex);
+        }
     }
-
+    ui->customPlot->yAxis->setRange(lowerbound[channelIndex],upperbound[channelIndex]);
     ui->lineEdit_channel->setText(QString("%1").arg(channelVol[channelIndex],0,'g',2));
+
+    if(cwin->isWindowClosed())
+        cwin->setCustomPlotData(t,channelVol,TIME_SPAN,TIME_BORDER,lowerbound,upperbound);
 
 }
 
@@ -213,19 +239,19 @@ bool MainWindow::decodingNewData()
 
     double t = (counter++) / 250.0;
     dataNum++;
-    double filteredchannelVol[8];
     for(int i=0;i<8;i++)
     {
         sEMGdata[i].append(channelVol[i]);
-        double filteredData=notchfilters[i].filter(channelVol[i]);
-        filteredchannelVol[i]=hpfilters[i].filter(filteredData);
-        if (dataNum>50)
-            filteredchannelVol[i]=waveletfilter[i].filter(filteredchannelVol[i]);
-        filteredsEMGdata[i].append(filteredchannelVol[i]);
+        if(ui->NotchFilterCheckBox->isChecked())
+            channelVol[i]=notchfilters[i].filter(channelVol[i]);
+        if(ui->HpFilterCheckBox->isChecked())
+            channelVol[i]=hpfilters[i].filter(channelVol[i]);
+        if(ui->WaveletFilterCheckBox->isChecked())
+            channelVol[i]=waveletfilters[i].filter(channelVol[i]);
+        filteredsEMGdata[i].append(channelVol[i]);
     }
 
-    setCustomPlotData(t,filteredchannelVol);
-    cwin->setCustomPlotData(t,filteredsEMGdata,TIME_SPAN,TIME_BORDER,dataNum);
+    setCustomPlotData(t,channelVol);
     return true;
 }
 
@@ -241,7 +267,7 @@ void MainWindow::on_pushButton_fresh_clicked()
 
 void MainWindow::on_pushButton_squareWaveTest_clicked()
 {
-    unsigned char cmd[] = {0x05};
+    unsigned char cmd[] = {0x02};
     if (!serialPort.isOpen())
         return;
     serialPort.write((char *)cmd,1);
@@ -249,7 +275,7 @@ void MainWindow::on_pushButton_squareWaveTest_clicked()
 
 void MainWindow::on_pushButton_noiseTest_clicked()
 {
-    unsigned char cmd[] = {0x04};
+    unsigned char cmd[] = {0x03};
     if (!serialPort.isOpen())
         return;
     serialPort.write((char *)cmd,1);
@@ -257,15 +283,30 @@ void MainWindow::on_pushButton_noiseTest_clicked()
 
 void MainWindow::on_pushButton_reset_clicked()
 {
-    unsigned char cmd[] = {0x80};
+    unsigned char cmd[] = {0x01};
     if (!serialPort.isOpen())
         return;
     serialPort.write((char *)cmd,1);
+
 }
 
 void MainWindow::on_pushButton_beginReadC_clicked()
 {
-    unsigned char cmd[] = {0x10};
+    int dbIndex = ui->comboBox_db->currentIndex();
+    QString waveletname=QString("dB%1").arg(dbIndex+1);
+    for (int i=0;i<8;i++)
+        waveletfilters[i].setWaveletName(waveletname);
+
+    int delevelIndex = ui->comboBox_delevel->currentIndex();
+    for (int i=0;i<8;i++)
+        waveletfilters[i].setj(delevelIndex+1);
+
+    int MaxSigLenIndex=ui->comboBox_MaxSignalLen->currentIndex();
+    for (int i=0;i<8;i++)
+        waveletfilters[i].setMaxSignalLength(10*(MaxSigLenIndex+1));
+
+
+    unsigned char cmd[] = {0x05};
     if (!serialPort.isOpen())
         return;
     serialPort.write((char *)cmd,1);
@@ -273,7 +314,7 @@ void MainWindow::on_pushButton_beginReadC_clicked()
 
 void MainWindow::on_pushButton_stopReadC_clicked()
 {
-    unsigned char cmd[] = {0x11};
+    unsigned char cmd[] = {0x06};
     if (!serialPort.isOpen())
         return;
     serialPort.write((char *)cmd,1);
@@ -286,7 +327,7 @@ void MainWindow::on_pushButton_clearLog_clicked()
 
 void MainWindow::on_pushButton_normalTest_clicked()
 {
-    unsigned char cmd[] = {0x06};
+    unsigned char cmd[] = {0x04};
     if (!serialPort.isOpen())
         return;
     serialPort.write((char *)cmd,1);
@@ -318,6 +359,7 @@ double MainWindow::maxValue(double beginpoint, double endpoint, int channelIndex
 
 void MainWindow::on_ChannelAllButton_clicked()
 {
+    cwin->changeWindowState(true);
     cwin->show();
 }
 
@@ -386,4 +428,28 @@ int MainWindow::saveData(QString &filename)
     ffiltereddata.close();;
 
     return 0;
+}
+
+void MainWindow::on_pushButton_resetplot_clicked()
+{
+    for(int i=0;i<8;i++)
+    {
+        sEMGdata[i].clear();
+        filteredsEMGdata[i].clear();
+    }
+
+    ui->customPlot->graph(0)->clearData();
+    ui->customPlot->replot();
+
+    cwin->reset();
+
+    for (int i=0;i<6;i++)
+    {
+        notchfilters[i].reset();
+        hpfilters[i].reset();
+        waveletfilters[i].reset();
+    }
+
+    dataNum=0;
+    counter=0;
 }

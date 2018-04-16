@@ -620,6 +620,7 @@ release/moc_mainwindow.cpp: C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtWidgets/QMai
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/QTimer \
 		../ADS1298_Monitor/channelallwindow.h \
 		../ADS1298_Monitor/iirfilter.h \
+		../ADS1298_Monitor/waveletfilter.h \
 		../ADS1298_Monitor/mainwindow.h
 	C:\Qt\Qt5.5.0\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/win32-g++ -ID:/wuze/sEMG_git/ADS1298_Monitor_SingleChannel/ADS1298_Monitor -IC:/Qt/Qt5.5.0/5.5/mingw492_32/include -IC:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtPrintSupport -IC:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtWidgets -IC:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui -IC:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtANGLE -IC:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtSerialPort -IC:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore -I. ..\ADS1298_Monitor\mainwindow.h -o release\moc_mainwindow.cpp
 
@@ -2597,6 +2598,7 @@ release/main.o: ../ADS1298_Monitor/main.cpp ../ADS1298_Monitor/mainwindow.h \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/QTimer \
 		../ADS1298_Monitor/channelallwindow.h \
 		../ADS1298_Monitor/iirfilter.h \
+		../ADS1298_Monitor/waveletfilter.h \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtWidgets/QApplication
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\main.o ..\ADS1298_Monitor\main.cpp
 
@@ -3093,6 +3095,7 @@ release/mainwindow.o: ../ADS1298_Monitor/mainwindow.cpp ../ADS1298_Monitor/mainw
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/QTimer \
 		../ADS1298_Monitor/channelallwindow.h \
 		../ADS1298_Monitor/iirfilter.h \
+		../ADS1298_Monitor/waveletfilter.h \
 		ui_mainwindow.h \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtWidgets/QAction \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtWidgets/QApplication \

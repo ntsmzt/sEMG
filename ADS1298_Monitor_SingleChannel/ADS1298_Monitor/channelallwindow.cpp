@@ -1,7 +1,6 @@
 #include "channelallwindow.h"
 #include "ui_channelallwindow.h"
 
-
 ChannelAllWindow::ChannelAllWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::ChannelAllWindow),
@@ -18,6 +17,7 @@ ChannelAllWindow::ChannelAllWindow(QWidget *parent) :
     customPlot[6] = ui->customPlot7;
     customPlot[7] = ui->customPlot8;
 
+    isChannelAllWindowClosed=false;
 }
 
 ChannelAllWindow::~ChannelAllWindow()
@@ -51,46 +51,45 @@ void ChannelAllWindow::setCustomPlotPattern(double TIME_SPAN, double TIME_BORDER
 
 }
 
-void ChannelAllWindow::setCustomPlotData(double t, QVector< QVector<double> > sEMGdata, double TIME_SPAN, double TIME_BORDER, int dataNum)
+void ChannelAllWindow::setCustomPlotData(double t, double *channelVol, double TIME_SPAN, double TIME_BORDER, double *lowerbound, double *upperbound)
 {
     for(int i=0; i<8; i++)
     {
-        customPlot[i]->graph(0)->addData(t, sEMGdata[i].back());
+        customPlot[i]->graph(0)->addData(t, channelVol[i]);
         if(t<TIME_SPAN)
         {
-            customPlot[i]->xAxis->setRange(0,TIME_SPAN+TIME_BORDER);
-            customPlot[i]->yAxis->setRange(minValue(1,dataNum,i,sEMGdata),maxValue(1,dataNum,i,sEMGdata));
+            customPlot[i]->xAxis->setRange(0,TIME_SPAN+TIME_BORDER);            
         }
         else
         {
             customPlot[i]->graph(0)->removeDataBefore(t-TIME_SPAN);
-            customPlot[i]->xAxis->setRange(t-TIME_SPAN,t+TIME_BORDER);
-            customPlot[i]->yAxis->setRange(minValue(dataNum-1250,dataNum,i,sEMGdata),maxValue(dataNum-1250,dataNum,i,sEMGdata));
+            customPlot[i]->xAxis->setRange(t-TIME_SPAN,t+TIME_BORDER);            
         }
+        customPlot[i]->yAxis->setRange(lowerbound[i],upperbound[i]);
         customPlot[i]->replot();
     }
 }
 
-double ChannelAllWindow::minValue(double beginpoint, double endpoint, int channelIndex, QVector< QVector<double> > sEMGdata)
+void ChannelAllWindow::closeEvent(QCloseEvent *event)
 {
-    double minimumValue=sEMGdata[channelIndex][beginpoint-1];
-    for (int i=beginpoint;i<endpoint;i++)
-    {
-        if (sEMGdata[channelIndex][i]<minimumValue)
-            minimumValue=sEMGdata[channelIndex][i];
-    }
-    minimumValue*=1.25;
-    return -0.04<minimumValue?-0.04:minimumValue;
+    isChannelAllWindowClosed=false;
 }
 
-double ChannelAllWindow::maxValue(double beginpoint, double endpoint, int channelIndex, QVector< QVector<double> > sEMGdata)
+void ChannelAllWindow::reset()
 {
-    double maximumValue=sEMGdata[channelIndex][beginpoint-1];
-    for (int i=beginpoint;i<endpoint;i++)
+    for(int i=0;i<8;i++)
     {
-        if (sEMGdata[channelIndex][i]>maximumValue)
-            maximumValue=sEMGdata[channelIndex][i];
+        customPlot[i]->graph(0)->clearData();
+        customPlot[i]->replot();
     }
-    maximumValue*=1.25;
-    return 0.04>maximumValue?0.04:maximumValue;
+}
+
+bool ChannelAllWindow::isWindowClosed()
+{
+    return isChannelAllWindowClosed;
+}
+
+void ChannelAllWindow::changeWindowState(bool state)
+{
+    isChannelAllWindowClosed=state;
 }

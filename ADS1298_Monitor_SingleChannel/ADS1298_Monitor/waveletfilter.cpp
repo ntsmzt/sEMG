@@ -134,13 +134,15 @@ double WaveletFilter::filter(double data)
 {
     signal.append(data);
     filteredsignal.clear();
+    if (signal.size()<20)
+        return signal.back();
 
     if (signal.size()>MaxSignalLength)
         signal.removeFirst(); //移除第一个数据
     QVector<double> c;
     QVector<int> length;
     wavedec(signal,c,length);  //小波分解
-    QVector<double> det1(length[j]);
+    QVector<double> det1;
     int L=0;
     for (int i=0;i<j;i++)
         L+=length[i];
@@ -148,7 +150,7 @@ double WaveletFilter::filter(double data)
         det1.append(c[L+i]);
     double threshold=getThr(det1);//求阈值
     Wthresh(c,threshold,length[0]);  //阈值化处理
-    waverec(filteredsignal, c, length); //信号重构
+    waverec(filteredsignal,c,length); //信号重构
 
     return filteredsignal.back();    //输出滤波后的结果
 }
@@ -156,7 +158,7 @@ double WaveletFilter::filter(double data)
 
 // 根据细节系数，以及信号长度计算阈值
 double WaveletFilter::getThr(
-    QVector<double> pDetCoef//细节系数（应该是第一级的细节系数）
+    QVector<double> &pDetCoef//细节系数（应该是第一级的细节系数）
     )
 {
     int detLen=pDetCoef.size();
@@ -218,13 +220,10 @@ void WaveletFilter::reset()
 {
     signal.clear();
     filteredsignal.clear();
-    LO_D.clear();
-    HI_D.clear();
-    LO_R.clear();
-    HI_R.clear();
 }
 
-void  WaveletFilter::dwt(QVector<double> &sig, QVector<double> &A, QVector<double> &D)//A 是近似序列，D是细节序列
+void  WaveletFilter::
+dwt(QVector<double> &sig, QVector<double> &A, QVector<double> &D)//A 是近似序列，D是细节序列
 {
     int srcLen=sig.size();//源信号的长度
     int filterLen=LO_D.size(); //滤波器长度
@@ -300,7 +299,7 @@ void  WaveletFilter::idwt(QVector<double> &output, QVector<double> &A, QVector<d
     }
 
     //对称拓延
-    filterLen=LO_D.size();
+    filterLen=LO_R.size();
     for(int i=0;i<filterLen-1;i++)
     {
         A.insert(0,A[2*i]);
@@ -314,7 +313,7 @@ void  WaveletFilter::idwt(QVector<double> &output, QVector<double> &A, QVector<d
 
     //卷积
     QVector<double> temp_A,temp_D;
-    for (int i=0;i<A.size()+filterLen-1;i++)
+    for (int i=0;i<A.size()-filterLen+1;i++)
     {
         double t=0,s=0;
         for (int k=0;k<filterLen;k++){
@@ -326,7 +325,7 @@ void  WaveletFilter::idwt(QVector<double> &output, QVector<double> &A, QVector<d
     }
 
     //求和
-    for(int i=0;i<temp_A.size();i++)
+    for(int i=filterLen-1;i<temp_A.size()-(filterLen-1);i++)
         output.append(temp_A[i]+temp_D[i]);
 
     return;

@@ -307,6 +307,88 @@
      <string>Save</string>
     </property>
    </widget>
+   <widget class="QCheckBox" name="NotchFilterCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>230</y>
+      <width>91</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>NotchFilter</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="HpFilterCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>250</y>
+      <width>91</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>HpFilter</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="WaveletFilterCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>270</y>
+      <width>101</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>WaveletFilter</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_resetplot">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>20</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>ResetPlot</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_db">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>310</y>
+      <width>81</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_delevel">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>350</y>
+      <width>81</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_MaxSignalLen">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>390</y>
+      <width>81</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

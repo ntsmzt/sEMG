@@ -13,6 +13,7 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
@@ -54,6 +55,13 @@ public:
     QComboBox *comboBox_channel;
     QPushButton *ChannelAllButton;
     QPushButton *savebutton;
+    QCheckBox *NotchFilterCheckBox;
+    QCheckBox *HpFilterCheckBox;
+    QCheckBox *WaveletFilterCheckBox;
+    QPushButton *pushButton_resetplot;
+    QComboBox *comboBox_db;
+    QComboBox *comboBox_delevel;
+    QComboBox *comboBox_MaxSignalLen;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -132,6 +140,27 @@ public:
         savebutton = new QPushButton(centralWidget);
         savebutton->setObjectName(QStringLiteral("savebutton"));
         savebutton->setGeometry(QRect(890, 60, 75, 23));
+        NotchFilterCheckBox = new QCheckBox(centralWidget);
+        NotchFilterCheckBox->setObjectName(QStringLiteral("NotchFilterCheckBox"));
+        NotchFilterCheckBox->setGeometry(QRect(880, 230, 91, 16));
+        HpFilterCheckBox = new QCheckBox(centralWidget);
+        HpFilterCheckBox->setObjectName(QStringLiteral("HpFilterCheckBox"));
+        HpFilterCheckBox->setGeometry(QRect(880, 250, 91, 16));
+        WaveletFilterCheckBox = new QCheckBox(centralWidget);
+        WaveletFilterCheckBox->setObjectName(QStringLiteral("WaveletFilterCheckBox"));
+        WaveletFilterCheckBox->setGeometry(QRect(880, 270, 101, 16));
+        pushButton_resetplot = new QPushButton(centralWidget);
+        pushButton_resetplot->setObjectName(QStringLiteral("pushButton_resetplot"));
+        pushButton_resetplot->setGeometry(QRect(890, 20, 75, 23));
+        comboBox_db = new QComboBox(centralWidget);
+        comboBox_db->setObjectName(QStringLiteral("comboBox_db"));
+        comboBox_db->setGeometry(QRect(880, 310, 81, 22));
+        comboBox_delevel = new QComboBox(centralWidget);
+        comboBox_delevel->setObjectName(QStringLiteral("comboBox_delevel"));
+        comboBox_delevel->setGeometry(QRect(880, 350, 81, 22));
+        comboBox_MaxSignalLen = new QComboBox(centralWidget);
+        comboBox_MaxSignalLen->setObjectName(QStringLiteral("comboBox_MaxSignalLen"));
+        comboBox_MaxSignalLen->setGeometry(QRect(880, 390, 81, 22));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -175,6 +204,10 @@ public:
         pushButton_normalTest->setText(QApplication::translate("MainWindow", "Normal Test", 0));
         ChannelAllButton->setText(QApplication::translate("MainWindow", "ChannelAll", 0));
         savebutton->setText(QApplication::translate("MainWindow", "Save", 0));
+        NotchFilterCheckBox->setText(QApplication::translate("MainWindow", "NotchFilter", 0));
+        HpFilterCheckBox->setText(QApplication::translate("MainWindow", "HpFilter", 0));
+        WaveletFilterCheckBox->setText(QApplication::translate("MainWindow", "WaveletFilter", 0));
+        pushButton_resetplot->setText(QApplication::translate("MainWindow", "ResetPlot", 0));
     } // retranslateUi
 
 };

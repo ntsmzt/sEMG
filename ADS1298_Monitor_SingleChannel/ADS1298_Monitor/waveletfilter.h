@@ -20,7 +20,7 @@ public:
     void setMaxSignalLength(int length);
     void setish(int thresholdpattern);
     double filter(double data);
-    double getThr(QVector<double> pDetCoef);
+    double getThr(QVector<double> &pDetCoef);
     void Wthresh(
         QVector<double> &pDstCoef,//细节系数（应该是除近似系数外的所有的细节系数）
         double thr,//阈值

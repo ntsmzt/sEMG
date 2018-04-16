@@ -59,6 +59,8 @@ private slots:
     void on_savebutton_clicked();
     int saveData(QString &filename);
 
+    void on_pushButton_resetplot_clicked();
+
 private:
     Ui::MainWindow *ui;
     QSerialPort serialPort;
@@ -71,12 +73,13 @@ private:
     bool decodingNewData();
     void log(QString info);
     int dataNum;
-    QVector< QVector<double> > sEMGdata;
-    QVector< QVector<double> > filteredsEMGdata;
+    QVector<double> filteredsEMGdata[8];
+    QVector<double> sEMGdata[8];
     ChannelAllWindow *cwin;
     IIRFilter notchfilters[8];
     IIRFilter hpfilters[8];
-    WaveletFilter waveletfilter[8];
+    WaveletFilter waveletfilters[8];
+
 };
 
 #endif // MAINWINDOW_H

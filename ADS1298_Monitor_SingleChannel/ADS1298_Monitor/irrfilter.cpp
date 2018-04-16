@@ -53,7 +53,7 @@ double IIRFilter::filter(double data)
     return ytmp[0];    //输出IIR滤波后的结果
 }
 
-int IIRFilter::ResetFilter()
+int IIRFilter::reset()
 {
     xtmp.clear();
     ytmp.clear();

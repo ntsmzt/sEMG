@@ -10,7 +10,7 @@ public:
     IIRFilter();
     int initFilter(double atmp[],double btmp[],int nal,int nbl);
     double filter(double data);
-    int ResetFilter();
+    int reset();
 
 
 private:
