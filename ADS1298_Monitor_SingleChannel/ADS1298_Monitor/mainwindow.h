@@ -10,6 +10,7 @@
 #include "channelallwindow.h"
 #include "iirfilter.h"
 #include "waveletfilter.h"
+#include "ann.h"
 
 #define TIME_SPAN 5.0
 #define TIME_BORDER 0.0
@@ -64,6 +65,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QSerialPort serialPort;
+    QSerialPort SendSerialPort;
     QByteArray buffer;
     bool bufferDecoding();
     void setCustomPlotPattern();
@@ -79,6 +81,7 @@ private:
     IIRFilter notchfilters[8];
     IIRFilter hpfilters[8];
     WaveletFilter waveletfilters[8];
+    ANN ann;
 
 };
 

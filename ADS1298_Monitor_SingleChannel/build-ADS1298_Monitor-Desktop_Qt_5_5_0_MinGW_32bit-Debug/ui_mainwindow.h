@@ -15,6 +15,7 @@
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
+#include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
@@ -62,6 +63,13 @@ public:
     QComboBox *comboBox_db;
     QComboBox *comboBox_delevel;
     QComboBox *comboBox_MaxSignalLen;
+    QGroupBox *groupBox_7;
+    QLabel *gesturename;
+    QCheckBox *DebugBox;
+    QLabel *label_3;
+    QComboBox *SendportBox;
+    QComboBox *SendBox_baudRate;
+    QLabel *label_4;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -102,7 +110,7 @@ public:
         pushButton_clearLog->setGeometry(QRect(320, 90, 261, 16));
         customPlot = new QCustomPlot(centralWidget);
         customPlot->setObjectName(QStringLiteral("customPlot"));
-        customPlot->setGeometry(QRect(50, 120, 811, 381));
+        customPlot->setGeometry(QRect(50, 120, 701, 321));
         portBox = new QComboBox(centralWidget);
         portBox->setObjectName(QStringLiteral("portBox"));
         portBox->setGeometry(QRect(110, 20, 61, 22));
@@ -161,6 +169,49 @@ public:
         comboBox_MaxSignalLen = new QComboBox(centralWidget);
         comboBox_MaxSignalLen->setObjectName(QStringLiteral("comboBox_MaxSignalLen"));
         comboBox_MaxSignalLen->setGeometry(QRect(880, 390, 81, 22));
+        groupBox_7 = new QGroupBox(centralWidget);
+        groupBox_7->setObjectName(QStringLiteral("groupBox_7"));
+        groupBox_7->setGeometry(QRect(750, 440, 221, 111));
+        gesturename = new QLabel(groupBox_7);
+        gesturename->setObjectName(QStringLiteral("gesturename"));
+        gesturename->setGeometry(QRect(10, 20, 201, 71));
+        QPalette palette;
+        QBrush brush(QColor(255, 0, 0, 255));
+        brush.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::WindowText, brush);
+        palette.setBrush(QPalette::Active, QPalette::Text, brush);
+        palette.setBrush(QPalette::Active, QPalette::ButtonText, brush);
+        palette.setBrush(QPalette::Inactive, QPalette::WindowText, brush);
+        palette.setBrush(QPalette::Inactive, QPalette::Text, brush);
+        palette.setBrush(QPalette::Inactive, QPalette::ButtonText, brush);
+        palette.setBrush(QPalette::Disabled, QPalette::WindowText, brush);
+        palette.setBrush(QPalette::Disabled, QPalette::Text, brush);
+        palette.setBrush(QPalette::Disabled, QPalette::ButtonText, brush);
+        gesturename->setPalette(palette);
+        QFont font;
+        font.setFamily(QStringLiteral("Adobe Devanagari"));
+        font.setPointSize(24);
+        font.setBold(false);
+        font.setItalic(false);
+        font.setWeight(50);
+        gesturename->setFont(font);
+        gesturename->setStyleSheet(QLatin1String("color: rgb(255, 0, 0);\n"
+"font: 24pt \"Adobe Devanagari\";"));
+        DebugBox = new QCheckBox(centralWidget);
+        DebugBox->setObjectName(QStringLiteral("DebugBox"));
+        DebugBox->setGeometry(QRect(880, 290, 101, 16));
+        label_3 = new QLabel(centralWidget);
+        label_3->setObjectName(QStringLiteral("label_3"));
+        label_3->setGeometry(QRect(760, 310, 54, 12));
+        SendportBox = new QComboBox(centralWidget);
+        SendportBox->setObjectName(QStringLiteral("SendportBox"));
+        SendportBox->setGeometry(QRect(810, 310, 61, 22));
+        SendBox_baudRate = new QComboBox(centralWidget);
+        SendBox_baudRate->setObjectName(QStringLiteral("SendBox_baudRate"));
+        SendBox_baudRate->setGeometry(QRect(810, 350, 61, 22));
+        label_4 = new QLabel(centralWidget);
+        label_4->setObjectName(QStringLiteral("label_4"));
+        label_4->setGeometry(QRect(760, 350, 54, 12));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -183,8 +234,8 @@ public:
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0));
         comboBox_baudRate->clear();
         comboBox_baudRate->insertItems(0, QStringList()
-         << QApplication::translate("MainWindow", "115200", 0)
          << QApplication::translate("MainWindow", "921600", 0)
+         << QApplication::translate("MainWindow", "115200", 0)
          << QApplication::translate("MainWindow", "9600", 0)
          << QApplication::translate("MainWindow", "19200", 0)
          << QApplication::translate("MainWindow", "38400", 0)
@@ -208,6 +259,19 @@ public:
         HpFilterCheckBox->setText(QApplication::translate("MainWindow", "HpFilter", 0));
         WaveletFilterCheckBox->setText(QApplication::translate("MainWindow", "WaveletFilter", 0));
         pushButton_resetplot->setText(QApplication::translate("MainWindow", "ResetPlot", 0));
+        groupBox_7->setTitle(QApplication::translate("MainWindow", "Gesture", 0));
+        gesturename->setText(QString());
+        DebugBox->setText(QApplication::translate("MainWindow", "Debug", 0));
+        label_3->setText(QApplication::translate("MainWindow", "\344\270\262\345\217\243\345\217\267\357\274\232", 0));
+        SendBox_baudRate->clear();
+        SendBox_baudRate->insertItems(0, QStringList()
+         << QApplication::translate("MainWindow", "115200", 0)
+         << QApplication::translate("MainWindow", "921600", 0)
+         << QApplication::translate("MainWindow", "9600", 0)
+         << QApplication::translate("MainWindow", "19200", 0)
+         << QApplication::translate("MainWindow", "38400", 0)
+        );
+        label_4->setText(QApplication::translate("MainWindow", "\346\263\242\347\211\271\347\216\207\357\274\232", 0));
     } // retranslateUi
 
 };

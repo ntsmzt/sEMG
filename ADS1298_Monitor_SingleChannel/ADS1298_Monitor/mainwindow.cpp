@@ -18,15 +18,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     for (int i=1;i<=6;i++)
         ui->comboBox_db->addItem(QString("dB%1").arg(i));
-    ui->comboBox_db->setCurrentIndex(2); //默认db3
+    ui->comboBox_db->setCurrentIndex(1); //默认db2
 
     for (int i=1;i<=5;i++)
         ui->comboBox_delevel->addItem(QString("j= %1").arg(i));
-    ui->comboBox_delevel->setCurrentIndex(2); //默认j=3
+    ui->comboBox_delevel->setCurrentIndex(1); //默认j=2
 
     for (int i=1;i<=10;i++)
-        ui->comboBox_MaxSignalLen->addItem(QString("MaxSigLen= %3").arg(i*10));
-    ui->comboBox_MaxSignalLen->setCurrentIndex(4); //默认MaxSigLen=50
+        ui->comboBox_MaxSignalLen->addItem(QString("MaxSigLen= %3").arg(i*100));
+    ui->comboBox_MaxSignalLen->setCurrentIndex(4); //默认MaxSigLen=500
 
     handleFreshPort();
 
@@ -66,11 +66,27 @@ void MainWindow::on_pushButton_open_clicked()
     serialPort.setPortName(com);
     serialPort.open(QIODevice::ReadWrite);
 
+
+    int sendBaudRate= ui->SendBox_baudRate->currentText().toInt();
+    QString sendcom = ui->SendportBox->currentText();
+    SendSerialPort.setBaudRate(sendBaudRate);
+    SendSerialPort.setPortName(sendcom);
+    SendSerialPort.setDataBits(QSerialPort::Data8);
+    SendSerialPort.setStopBits(QSerialPort::OneStop);
+    SendSerialPort.setParity(QSerialPort::NoParity);
+    SendSerialPort.setFlowControl(QSerialPort::NoFlowControl);
+    SendSerialPort.open(QIODevice::WriteOnly);
+
+
     counter = 0;
     setCustomPlotPattern();
     cwin->setCustomPlotPattern(TIME_SPAN,TIME_BORDER);
     replotTimer.start(100); //10fps
-    ui->statusBar->showMessage(tr("Open successed"));
+
+    if(serialPort.isOpen())
+        ui->statusBar->showMessage(tr("Open successed"));
+    else
+        ui->statusBar->showMessage(tr("Open failed"));
 }
 
 void MainWindow::readyReadCallback()
@@ -90,9 +106,15 @@ void MainWindow::on_pushButton_send_clicked()
 
 void MainWindow::on_pushButton_close_clicked()
 {
-    serialPort.close();
+    if (serialPort.isOpen())
+        serialPort.close();
+    if (SendSerialPort.isOpen())
+        SendSerialPort.close();
     replotTimer.stop();
-    ui->statusBar->showMessage(tr("Close successed"));
+    if (~serialPort.isOpen())
+        ui->statusBar->showMessage(tr("Close successed"));
+    else
+        ui->statusBar->showMessage(tr("Close failed"));
 }
 
 void MainWindow::handleReplotTimerTimeout()
@@ -185,7 +207,7 @@ void MainWindow::setCustomPlotData(double t, double * channelVol)
     {
         ui->customPlot->graph(0)->removeDataBefore(t-TIME_SPAN);
         ui->customPlot->xAxis->setRange(t-TIME_SPAN,t+TIME_BORDER);
-        for (int i=0;i<6;i++)
+        for (int i=0;i<8;i++)
         {
             lowerbound[i]=minValue(dataNum-1250,dataNum,channelIndex);
             upperbound[i]=maxValue(dataNum-1250,dataNum,channelIndex);
@@ -251,6 +273,42 @@ bool MainWindow::decodingNewData()
         filteredsEMGdata[i].append(channelVol[i]);
     }
 
+    if(ui->DebugBox->isChecked())
+        ann.debug=true;
+    ann.getdata(channelVol);    
+    ui->gesturename->setText(ann.getcurrentgesture());
+
+    if (SendSerialPort.isOpen())
+    {
+        int currentgestureindex=ann.getcurrentgestureindex();
+        unsigned char cmd;
+        switch (currentgestureindex)
+        {
+        case 0:
+            cmd=0x00;
+            SendSerialPort.write((char*)cmd,1);
+            break;
+        case 1:
+            cmd=0x01;
+            SendSerialPort.write((char*)cmd,1);
+            break;
+        case 2:
+            cmd=0x02;
+            SendSerialPort.write((char*)cmd,1);
+            break;
+        case 3:
+            cmd=0x03;
+            SendSerialPort.write((char*)cmd,1);
+            break;
+        case 4:
+            cmd=0x04;
+            SendSerialPort.write((char*)cmd,1);
+            break;
+        default:
+            break;
+        }
+    }
+
     setCustomPlotData(t,channelVol);
     return true;
 }
@@ -303,7 +361,7 @@ void MainWindow::on_pushButton_beginReadC_clicked()
 
     int MaxSigLenIndex=ui->comboBox_MaxSignalLen->currentIndex();
     for (int i=0;i<8;i++)
-        waveletfilters[i].setMaxSignalLength(10*(MaxSigLenIndex+1));
+        waveletfilters[i].setMaxSignalLength(100*(MaxSigLenIndex+1));
 
 
     unsigned char cmd[] = {0x05};
@@ -342,7 +400,7 @@ double MainWindow::minValue(double beginpoint, double endpoint, int channelIndex
             minimumValue=filteredsEMGdata[channelIndex][i];
     }
     minimumValue*=1.25;
-    return -0.04<minimumValue?-0.04:minimumValue;
+    return -0.01<minimumValue?-0.01:minimumValue;
 }
 
 double MainWindow::maxValue(double beginpoint, double endpoint, int channelIndex)
@@ -354,7 +412,7 @@ double MainWindow::maxValue(double beginpoint, double endpoint, int channelIndex
             maximumValue=filteredsEMGdata[channelIndex][i];
     }
     maximumValue*=1.25;
-    return 0.04>maximumValue?0.04:maximumValue;
+    return 0.01>maximumValue?0.01:maximumValue;
 }
 
 void MainWindow::on_ChannelAllButton_clicked()
@@ -449,6 +507,7 @@ void MainWindow::on_pushButton_resetplot_clicked()
         hpfilters[i].reset();
         waveletfilters[i].reset();
     }
+    ann.reset();
 
     dataNum=0;
     counter=0;

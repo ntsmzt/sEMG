@@ -5,7 +5,7 @@ INPUT(
 ./debug\channelallwindow.o
 ./debug\irrfilter.o
 ./debug\waveletfilter.o
-./debug\wavelet2d.o
+./debug\ann.o
 ./debug\moc_mainwindow.o
 ./debug\moc_qcustomplot.o
 ./debug\moc_channelallwindow.o

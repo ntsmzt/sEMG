@@ -5,7 +5,7 @@ INPUT(
 ./release\channelallwindow.o
 ./release\irrfilter.o
 ./release\waveletfilter.o
-./release\wavelet2d.o
+./release\ann.o
 ./release\moc_mainwindow.o
 ./release\moc_qcustomplot.o
 ./release\moc_channelallwindow.o
