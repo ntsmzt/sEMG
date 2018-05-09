@@ -157,7 +157,7 @@ void ANN::recognizor()
     max(max_value,max_index,a3,output_layer_size);
     //if (max_value>=0.5)
         gestureindex=max_index;
-    //if (debug)
+    if (debug)
     {
         qDebug()<<a3[0]<<'\t'<<a3[1]<<'\t'<<a3[2]<<'\t'<<a3[3]<<'\t'<<a3[4]<<'\t'<<endl;
     }
@@ -181,26 +181,31 @@ void ANN::featureExtract()
     for (int i=0;i<channelNum;i++)
     {
         int size=inputdata[i].size();
-        double absdata[size];
+        double *absdata=new double[size];
         abs(absdata,inputdata[i],size);
         feature[featureNum*i+0]=mean(absdata,size);
+        delete []absdata;
 
-        double squaredata[size];
+        double *squaredata=new double[size];
         square(squaredata,inputdata[i],size);
         feature[featureNum*i+1]=sqrt(mean(squaredata,size));
 
         feature[featureNum*i+2]=mean(squaredata,size)*size/(size-1);
 
+        delete []squaredata;
+
         double mean_value=mean(inputdata[i],size);
-        double deviation[size];
+        double *deviation=new double[size];
         for (int j=0;j<size;j++)
             deviation[j]=(inputdata[i][j]-mean_value)*(inputdata[i][j]-mean_value);
         feature[featureNum*i+3]=sqrt(mean(deviation,size)*size/(size-1));
+        delete []deviation;
 
-        double waveformlength[size-1];
+        double *waveformlength=new double[size-1];
         for (int j=0;j<size-1;j++)
             waveformlength[j]=abs(inputdata[i][j+1]-inputdata[i][j]);
         feature[featureNum*i+4]=mean(waveformlength,size-1)*(size-1);
+        delete []waveformlength;
 /*
             double zerocrossing[size-1];
             for (int j=0;j<size-1;j++)
@@ -350,7 +355,7 @@ double ANN::powerspectrum(QVector<double> &data, int startpoint, int endpoint)  
     double delta=2.0;
     double frequencySupremum=100.0;
 
-    double Rep,Imp,fp,p;
+    double Rep,Imp,fp=0.0,p=0.0;
     for (int j=0;j<(int)(frequencySupremum/delta);j++)
     {
         Rep=0.0;

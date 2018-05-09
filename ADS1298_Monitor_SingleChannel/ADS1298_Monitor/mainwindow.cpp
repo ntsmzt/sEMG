@@ -50,6 +50,8 @@ MainWindow::MainWindow(QWidget *parent) :
         hpfilters[i].initFilter(ahp,bhp,1,5);
         notchfilters[i].initFilter(anotch,bnotch,7,7);
     }
+    gestureindex=-1;
+    gestureContinueCounter=0;
 }
 
 MainWindow::~MainWindow()
@@ -130,6 +132,7 @@ void MainWindow::handleFreshPort()
     for (int i=0;i<ports.length();i++)
     {
         ui->portBox->addItem(ports.at(i).portName());
+        //ui->SendportBox->addItem(ports.at(i).portName());
     }
 }
 
@@ -278,39 +281,66 @@ bool MainWindow::decodingNewData()
     ann.getdata(channelVol);    
     ui->gesturename->setText(ann.getcurrentgesture());
 
-    if (SendSerialPort.isOpen())
+    if (~SendSerialPort.isOpen())
     {
         int currentgestureindex=ann.getcurrentgestureindex();
-        unsigned char cmd;
-        switch (currentgestureindex)
+        if(currentgestureindex==-1)
         {
-        case 0:
-            cmd=0x00;
-            SendSerialPort.write((char*)cmd,1);
-            break;
-        case 1:
-            cmd=0x01;
-            SendSerialPort.write((char*)cmd,1);
-            break;
-        case 2:
-            cmd=0x02;
-            SendSerialPort.write((char*)cmd,1);
-            break;
-        case 3:
-            cmd=0x03;
-            SendSerialPort.write((char*)cmd,1);
-            break;
-        case 4:
-            cmd=0x04;
-            SendSerialPort.write((char*)cmd,1);
-            break;
-        default:
-            break;
+            gestureindex=currentgestureindex;
+            gestureContinueCounter=0;
+        }
+        else if(currentgestureindex==gestureindex)
+            gestureContinueCounter++;
+        else
+        {
+            gestureindex=currentgestureindex;
+            gestureContinueCounter=1;
+        }
+
+        if(gestureContinueCounter>=50)
+        {
+            sendcommand();
+            gestureContinueCounter=0;
         }
     }
 
     setCustomPlotData(t,channelVol);
     return true;
+}
+
+void MainWindow::sendcommand()
+{
+    unsigned char cmd[5]={0xAA,0x55,0x05,0x00,0x00};
+    switch (gestureindex)
+    {
+    case 0:
+        cmd[3]=0x00;
+        cmd[4]=cmd[0]+cmd[1]+cmd[2]+cmd[3];
+        SendSerialPort.write((char*)cmd,5);
+        break;
+    case 1:
+        cmd[3]=0x01;
+        cmd[4]=cmd[0]+cmd[1]+cmd[2]+cmd[3];
+        SendSerialPort.write((char*)cmd,5);
+        break;
+    case 2:
+        cmd[3]=0x02;
+        cmd[4]=cmd[0]+cmd[1]+cmd[2]+cmd[3];
+        SendSerialPort.write((char*)cmd,5);
+        break;
+    case 3:
+        cmd[3]=0x03;
+        cmd[4]=cmd[0]+cmd[1]+cmd[2]+cmd[3];
+        SendSerialPort.write((char*)cmd,5);
+        break;
+    case 4:
+        cmd[3]=0x04;
+        cmd[4]=cmd[0]+cmd[1]+cmd[2]+cmd[3];
+        SendSerialPort.write((char*)cmd,5);
+        break;
+    default:
+        break;
+    }
 }
 
 void MainWindow::log(QString info)

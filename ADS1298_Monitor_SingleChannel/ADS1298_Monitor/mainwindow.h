@@ -26,6 +26,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void sendcommand();
 
 private slots:
     void on_pushButton_open_clicked();
@@ -82,6 +83,8 @@ private:
     IIRFilter hpfilters[8];
     WaveletFilter waveletfilters[8];
     ANN ann;
+    int gestureindex;
+    int gestureContinueCounter;
 
 };
 
