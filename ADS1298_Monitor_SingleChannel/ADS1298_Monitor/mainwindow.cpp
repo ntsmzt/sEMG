@@ -51,7 +51,9 @@ MainWindow::MainWindow(QWidget *parent) :
         notchfilters[i].initFilter(anotch,bnotch,7,7);
     }
     gestureindex=-1;
+    lastgestureindex=-1;
     gestureContinueCounter=0;
+    interval=0;
 }
 
 MainWindow::~MainWindow()
@@ -89,6 +91,8 @@ void MainWindow::on_pushButton_open_clicked()
         ui->statusBar->showMessage(tr("Open successed"));
     else
         ui->statusBar->showMessage(tr("Open failed"));
+    if(!SendSerialPort.isOpen())
+        qDebug()<<"SendSerialPort is not open !"<<endl;
 }
 
 void MainWindow::readyReadCallback()
@@ -129,10 +133,11 @@ void MainWindow::handleFreshPort()
     QSerialPortInfo portinfo;
     QList<QSerialPortInfo> ports=portinfo.availablePorts();
     ui->portBox->clear();
+    ui->SendportBox->clear();
     for (int i=0;i<ports.length();i++)
     {
         ui->portBox->addItem(ports.at(i).portName());
-        //ui->SendportBox->addItem(ports.at(i).portName());
+        ui->SendportBox->addItem(ports.at(i).portName());
     }
 }
 
@@ -281,8 +286,10 @@ bool MainWindow::decodingNewData()
     ann.getdata(channelVol);    
     ui->gesturename->setText(ann.getcurrentgesture());
 
-    if (~SendSerialPort.isOpen())
+    if (SendSerialPort.isOpen())
     {
+        interval++;
+        //qDebug()<<gestureContinueCounter<<endl;
         int currentgestureindex=ann.getcurrentgestureindex();
         if(currentgestureindex==-1)
         {
@@ -299,7 +306,12 @@ bool MainWindow::decodingNewData()
 
         if(gestureContinueCounter>=50)
         {
-            sendcommand();
+            if (gestureindex!=lastgestureindex||interval>=300)
+            {
+                sendcommand();
+                interval=0;
+                lastgestureindex=gestureindex;
+            }
             gestureContinueCounter=0;
         }
     }

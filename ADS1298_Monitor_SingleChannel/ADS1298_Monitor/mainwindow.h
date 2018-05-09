@@ -84,7 +84,9 @@ private:
     WaveletFilter waveletfilters[8];
     ANN ann;
     int gestureindex;
+    int lastgestureindex;
     int gestureContinueCounter;
+    int interval;
 
 };
 
