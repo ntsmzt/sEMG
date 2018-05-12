@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     for(int i=1; i<=8; i++)
         ui->comboBox_channel->addItem(QString("Channel %1").arg(i));
-    ui->comboBox_channel->setCurrentIndex(0);  //默认通道1
+    ui->comboBox_channel->setCurrentIndex(3);  //默认通道4
 
     for (int i=1;i<=6;i++)
         ui->comboBox_db->addItem(QString("dB%1").arg(i));
@@ -73,13 +73,18 @@ void MainWindow::on_pushButton_open_clicked()
 
     int sendBaudRate= ui->SendBox_baudRate->currentText().toInt();
     QString sendcom = ui->SendportBox->currentText();
-    SendSerialPort.setBaudRate(sendBaudRate);
-    SendSerialPort.setPortName(sendcom);
-    SendSerialPort.setDataBits(QSerialPort::Data8);
-    SendSerialPort.setStopBits(QSerialPort::OneStop);
-    SendSerialPort.setParity(QSerialPort::NoParity);
-    SendSerialPort.setFlowControl(QSerialPort::NoFlowControl);
-    SendSerialPort.open(QIODevice::WriteOnly);
+    if(sendcom!=com)
+    {
+        SendSerialPort.setBaudRate(sendBaudRate);
+        SendSerialPort.setPortName(sendcom);
+        SendSerialPort.setDataBits(QSerialPort::Data8);
+        SendSerialPort.setStopBits(QSerialPort::OneStop);
+        SendSerialPort.setParity(QSerialPort::NoParity);
+        SendSerialPort.setFlowControl(QSerialPort::NoFlowControl);
+        SendSerialPort.open(QIODevice::WriteOnly);
+        if(!SendSerialPort.isOpen())
+            qDebug()<<"SendSerialPort is not open !"<<endl;
+    }
 
 
     counter = 0;
@@ -91,8 +96,7 @@ void MainWindow::on_pushButton_open_clicked()
         ui->statusBar->showMessage(tr("Open successed"));
     else
         ui->statusBar->showMessage(tr("Open failed"));
-    if(!SendSerialPort.isOpen())
-        qDebug()<<"SendSerialPort is not open !"<<endl;
+
 }
 
 void MainWindow::readyReadCallback()
@@ -353,6 +357,7 @@ void MainWindow::sendcommand()
     default:
         break;
     }
+    qDebug()<<ann.getcurrentgesture()<<endl;
 }
 
 void MainWindow::log(QString info)

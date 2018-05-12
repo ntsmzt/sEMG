@@ -2,7 +2,7 @@ clear
 close all
 %% ******************************initial****************************
 readpath='..\data\';
-filenames={'left-5','right-5','fist-5','spread-5','yeah-5'};
+filenames={'left-5-2','right-5-2','fist-5-2','spread-5-2','yeah-5-2'};
 ext='.filtereddat';
 gestureNum=length(filenames);
 data=cell(gestureNum,1);
@@ -41,21 +41,21 @@ if 1
         point{i}=segment(data{i});
     end
 %     
-    n=size(data{1},2);
-    for i=1:gestureNum
-        
-        for j=1:n
-            figure('NumberTitle', 'off', 'Name', filenames{i});
+%     n=size(data{1},2);
+%     for i=1:gestureNum
+%         
+%         for j=1:n
+%             figure('NumberTitle', 'off', 'Name', filenames{i});
 %             subplot(n,1,j)
-            hold on
-            plot(data{i}(:,j),'r');
-            plot(point{i}(:,1),0,'bo');
-            plot(point{i}(:,2),0,'bx');
+%             hold on
+%             plot(data{i}(:,j),'r');
+%             plot(point{i}(:,1),0,'bo');
+%             plot(point{i}(:,2),0,'bx');
 %             legend('filtered data','startpoint','endpoint');
-            title(['channel ',num2str(j)]);       
-            xlim([100,inf]);
-        end
-    end
+%             title(['channel ',num2str(j)]);       
+%             xlim([100,inf]);
+%         end
+%     end
 
 %     threshold=2e-4;
 %     
