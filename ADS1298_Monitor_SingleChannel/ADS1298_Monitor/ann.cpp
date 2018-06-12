@@ -91,6 +91,11 @@ void ANN::getdata(double *channelVol)
 
     if (inputdata[0].size()>200)
     {
+        if (inputdata[0].size()>250)
+        {
+            for (int i=0;i<channelNum;i++)
+                inputdata[i].pop_front();
+        }
         recognizor();
     }
 
@@ -161,7 +166,6 @@ void ANN::recognizor()
     {
         qDebug()<<a3[0]<<'\t'<<a3[1]<<'\t'<<a3[2]<<'\t'<<a3[3]<<'\t'<<a3[4]<<'\t'<<endl;
     }
-
 }
 
 void ANN::featureExtract()

@@ -14,6 +14,12 @@
 
 #define TIME_SPAN 5.0
 #define TIME_BORDER 0.0
+#define SAMPLE_Freq 250.0
+#define PlotNum SAMPLE_Freq*TIME_SPAN
+
+//#define ADS_NUM 1
+//#define CH_NUM ADS_NUM*8
+//typedef  enum {PS_IDLE, PS_HEADER, PS_CMD, PS_DATA, PS_CHECK} ParseState;
 
 namespace Ui {
 class MainWindow;
@@ -80,6 +86,7 @@ private:
     QVector<double> sEMGdata[8];
     ChannelAllWindow *cwin;
     IIRFilter notchfilters[8];
+    IIRFilter notchfilters_100[8];
     IIRFilter hpfilters[8];
     WaveletFilter waveletfilters[8];
     ANN ann;
@@ -87,6 +94,15 @@ private:
     int lastgestureindex;
     int gestureContinueCounter;
     int interval;
+/*
+    void parse(byte dat);
+    ParseState parseState;
+    byte parseCMD;
+    byte parseDataLen;
+    byte parseDataSumCheck;
+    int parseDataIndex;
+    QList<byte> dataBuffer;
+    */
 
 };
 

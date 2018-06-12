@@ -45,15 +45,21 @@ MainWindow::MainWindow(QWidget *parent) :
                          2.930889612822229,-1.213689963509197,0.604109699507278};
     static double bnotch[7]={0.777337677403281,-1.441206975301750,3.222510786578553,-3.065671614896859,
                          3.222258852356618,-1.440981638482467,0.777155376086710};
+
+    static double anotch1[3]= {0.990498466402,  -0.6121617180411,    0.990498466402};
+    static double bnotch1[3]= { 1,  -0.6121617180411,    0.980996932804};
+
     for (int i=0;i<8;i++)
     {
         hpfilters[i].initFilter(ahp,bhp,1,5);
         notchfilters[i].initFilter(anotch,bnotch,7,7);
+        notchfilters_100[i].initFilter(anotch1,bnotch1,3,3);
     }
     gestureindex=-1;
     lastgestureindex=-1;
     gestureContinueCounter=0;
     interval=0;
+    //parseState = PS_IDLE;
 }
 
 MainWindow::~MainWindow()
@@ -101,13 +107,77 @@ void MainWindow::on_pushButton_open_clicked()
 
 void MainWindow::readyReadCallback()
 {
-    //qDebug()<<"readyReadCallback"<<endl;
+
+    //QByteArray r = serialPort.readAll();
+    //for(int i=0; i<r.size(); i++)
+    //    parse(r.at(i));
+
     QByteArray r = serialPort.readAll();
     buffer.append(r);    
     while(bufferDecoding());
+
 }
+/*
+void MainWindow::parse(byte dat)
+{
+    switch(parseState)
+    {
+    case PS_IDLE:
+        if(dat==0xff)
+        {
+            parseState = PS_HEADER;
+            return;
+        }
+        break;
+    case PS_HEADER:
+        if(dat==0xff)
+        {
+            parseState = PS_CMD;
+            return;
+        }
+        break;
+    case PS_CMD:
+        parseCMD = dat;
+        parseState = PS_DATA;
+        parseDataSumCheck = 0;
+        parseDataIndex = 0;
+        dataBuffer.clear();
+        switch(parseCMD)
+        {
+        case 0x01:  //emg data
+            parseDataLen = ADS_NUM*27;
+            return;
+        case 0x03: // 回复命令
+            parseDataLen = 1;
+            return;
+        }
+        break;
+    case PS_DATA:
+        dataBuffer.append(dat);
+        parseDataSumCheck += dat;
+        parseDataIndex++;
+        if(parseDataIndex==parseDataLen)
+            parseState = PS_CHECK;
+        return;
+    case PS_CHECK:
+        if(parseDataSumCheck==dat) // 校验成功
+        {
+            switch(parseCMD)
+            {
+            case 0x01:  //emg data
+                decodingNewData();
+                break;
+            case 0x03: // 回复命令
+                log(QString::number(dataBuffer[0]));
+                break;
+            }
+        }
+        break;
+    }
 
-
+    parseState = PS_IDLE;
+}
+*/
 void MainWindow::on_pushButton_send_clicked()
 {
     QByteArray ms = ui->lineEdit_send->text().toLocal8Bit();
@@ -204,6 +274,7 @@ void MainWindow::setCustomPlotPattern()
 void MainWindow::setCustomPlotData(double t, double * channelVol)
 {
     int channelIndex = ui->comboBox_channel->currentIndex();
+
     ui->customPlot->graph(0)->addData(t, channelVol[channelIndex]);
     double lowerbound[8],upperbound[8];
     if(t<TIME_SPAN)
@@ -230,11 +301,11 @@ void MainWindow::setCustomPlotData(double t, double * channelVol)
 
     if(cwin->isWindowClosed())
         cwin->setCustomPlotData(t,channelVol,TIME_SPAN,TIME_BORDER,lowerbound,upperbound);
-
 }
 
 bool MainWindow::decodingNewData()
 {
+
     int dataIndex = 6;
     unsigned char sum = 0;
     unsigned char data[3];
@@ -271,13 +342,42 @@ bool MainWindow::decodingNewData()
         //qDebug()<<i<<'\t'<<channelVol[i]<<endl;
     }
 
-    double t = (counter++) / 250.0;
+/*
+    int dataIndex = 0;
+    double channelVol[CH_NUM];
+    int chIndex = 0;
+    for(int i=0; i<ADS_NUM; i++)
+    {
+        dataIndex += 3;
+
+        unsigned char data[3];
+        for(int i=0; i<8; i++) //对每个通道
+        {
+            for(int j=0; j<3;j++) // 读取数据
+            {
+                data[j] = dataBuffer[dataIndex++];
+            }
+
+            int val;
+            if( (data[0]&0x80)!=0x80 ) //最高位为0，表示输出为整数
+                val = (unsigned int(data[0])<<16) | (unsigned int(data[1])<<8) | (unsigned int(data[2]));
+            else //最高位为1，输出为负数，需要转化为补码
+                val = 0xff000000 | (unsigned int(data[0])<<16) | (unsigned int(data[1])<<8) | (unsigned int(data[2])); //取符号位之后的数值
+
+            channelVol[chIndex++] = double(val) / 0x7FFFFE * 3.3; //转化为电压值
+        }
+    }
+*/
+    double t = (counter++) / SAMPLE_Freq;
     dataNum++;
     for(int i=0;i<8;i++)
     {
         sEMGdata[i].append(channelVol[i]);
         if(ui->NotchFilterCheckBox->isChecked())
+        {
             channelVol[i]=notchfilters[i].filter(channelVol[i]);
+            channelVol[i]=notchfilters_100[i].filter(channelVol[i]);
+        }
         if(ui->HpFilterCheckBox->isChecked())
             channelVol[i]=hpfilters[i].filter(channelVol[i]);
         if(ui->WaveletFilterCheckBox->isChecked())
@@ -285,15 +385,15 @@ bool MainWindow::decodingNewData()
         filteredsEMGdata[i].append(channelVol[i]);
     }
 
-    if(ui->DebugBox->isChecked())
-        ann.debug=true;
-    ann.getdata(channelVol);    
-    ui->gesturename->setText(ann.getcurrentgesture());
+
 
     if (SendSerialPort.isOpen())
     {
+        if(ui->DebugBox->isChecked())
+            ann.debug=true;
+        ann.getdata(channelVol);
+        ui->gesturename->setText(ann.getcurrentgesture());
         interval++;
-        //qDebug()<<gestureContinueCounter<<endl;
         int currentgestureindex=ann.getcurrentgestureindex();
         if(currentgestureindex==-1)
         {
