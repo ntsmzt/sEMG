@@ -25,6 +25,7 @@
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QToolBar>
+#include <QtWidgets/QToolButton>
 #include <QtWidgets/QWidget>
 #include "qcustomplot.h"
 
@@ -44,6 +45,7 @@ public:
     QPushButton *pushButton_close;
     QPushButton *pushButton_clearLog;
     QCustomPlot *customPlot;
+    QToolButton *toolButton;
     QComboBox *portBox;
     QPushButton *pushButton_fresh;
     QPushButton *pushButton_squareWaveTest;
@@ -111,6 +113,9 @@ public:
         customPlot = new QCustomPlot(centralWidget);
         customPlot->setObjectName(QStringLiteral("customPlot"));
         customPlot->setGeometry(QRect(50, 120, 701, 321));
+        toolButton = new QToolButton(customPlot);
+        toolButton->setObjectName(QStringLiteral("toolButton"));
+        toolButton->setGeometry(QRect(-40, 410, 37, 18));
         portBox = new QComboBox(centralWidget);
         portBox->setObjectName(QStringLiteral("portBox"));
         portBox->setGeometry(QRect(110, 20, 61, 22));
@@ -246,6 +251,7 @@ public:
         pushButton_open->setText(QApplication::translate("MainWindow", "\346\211\223\345\274\200", 0));
         pushButton_close->setText(QApplication::translate("MainWindow", "\345\205\263\351\227\255", 0));
         pushButton_clearLog->setText(QString());
+        toolButton->setText(QApplication::translate("MainWindow", "...", 0));
         pushButton_fresh->setText(QApplication::translate("MainWindow", "\345\210\267\346\226\260", 0));
         pushButton_squareWaveTest->setText(QApplication::translate("MainWindow", "Square Wave", 0));
         pushButton_noiseTest->setText(QApplication::translate("MainWindow", "Noise Test", 0));

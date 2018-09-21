@@ -59,7 +59,8 @@ MainWindow::MainWindow(QWidget *parent) :
     lastgestureindex=-1;
     gestureContinueCounter=0;
     interval=0;
-    //parseState = PS_IDLE;
+
+    parseState = PS_IDLE;
 }
 
 MainWindow::~MainWindow()
@@ -107,17 +108,17 @@ void MainWindow::on_pushButton_open_clicked()
 
 void MainWindow::readyReadCallback()
 {
-
-    //QByteArray r = serialPort.readAll();
-    //for(int i=0; i<r.size(); i++)
-    //    parse(r.at(i));
-
+    /*
     QByteArray r = serialPort.readAll();
     buffer.append(r);    
     while(bufferDecoding());
+    */
+    QByteArray r = serialPort.readAll();
+    for(int i=0; i<r.size(); i++)
+        parse(r.at(i));
 
 }
-/*
+
 void MainWindow::parse(byte dat)
 {
     switch(parseState)
@@ -177,7 +178,7 @@ void MainWindow::parse(byte dat)
 
     parseState = PS_IDLE;
 }
-*/
+
 void MainWindow::on_pushButton_send_clicked()
 {
     QByteArray ms = ui->lineEdit_send->text().toLocal8Bit();
@@ -217,7 +218,6 @@ void MainWindow::handleFreshPort()
 
 bool MainWindow::bufferDecoding()
 {
-    //qDebug()<<"bufferDecoding"<<endl;
     QByteArray packageHead;
     packageHead.append(0xff);
     packageHead.append(0xff);
@@ -246,7 +246,6 @@ bool MainWindow::bufferDecoding()
 
     if(buffer.length()>=31 && cmd==0x01) //数据命令
     {
-       // qDebug()<<"data"<<endl;
         decodingNewData();
         return true;
     }
@@ -303,6 +302,7 @@ void MainWindow::setCustomPlotData(double t, double * channelVol)
         cwin->setCustomPlotData(t,channelVol,TIME_SPAN,TIME_BORDER,lowerbound,upperbound);
 }
 
+/*
 bool MainWindow::decodingNewData()
 {
 
@@ -341,33 +341,6 @@ bool MainWindow::decodingNewData()
         channelVol[i] = double(channelVal[i]) / 0x7FFFFE * 3.3; //转化为电压值
         //qDebug()<<i<<'\t'<<channelVol[i]<<endl;
     }
-
-/*
-    int dataIndex = 0;
-    double channelVol[CH_NUM];
-    int chIndex = 0;
-    for(int i=0; i<ADS_NUM; i++)
-    {
-        dataIndex += 3;
-
-        unsigned char data[3];
-        for(int i=0; i<8; i++) //对每个通道
-        {
-            for(int j=0; j<3;j++) // 读取数据
-            {
-                data[j] = dataBuffer[dataIndex++];
-            }
-
-            int val;
-            if( (data[0]&0x80)!=0x80 ) //最高位为0，表示输出为整数
-                val = (unsigned int(data[0])<<16) | (unsigned int(data[1])<<8) | (unsigned int(data[2]));
-            else //最高位为1，输出为负数，需要转化为补码
-                val = 0xff000000 | (unsigned int(data[0])<<16) | (unsigned int(data[1])<<8) | (unsigned int(data[2])); //取符号位之后的数值
-
-            channelVol[chIndex++] = double(val) / 0x7FFFFE * 3.3; //转化为电压值
-        }
-    }
-*/
     double t = (counter++) / SAMPLE_Freq;
     dataNum++;
     for(int i=0;i<8;i++)
@@ -384,8 +357,6 @@ bool MainWindow::decodingNewData()
             channelVol[i]=waveletfilters[i].filter(channelVol[i]);
         filteredsEMGdata[i].append(channelVol[i]);
     }
-
-
 
     if (SendSerialPort.isOpen())
     {
@@ -419,9 +390,91 @@ bool MainWindow::decodingNewData()
             gestureContinueCounter=0;
         }
     }
-
     setCustomPlotData(t,channelVol);
     return true;
+}
+*/
+
+bool MainWindow::decodingNewData()
+{
+    int dataIndex = 0;
+    double channelVol[CH_NUM];
+    int chIndex = 0;
+    for(int i=0; i<ADS_NUM; i++)
+    {
+        dataIndex += 3;
+
+        unsigned char data[3];
+        for(int i=0; i<8; i++) //对每个通道
+        {
+            for(int j=0; j<3;j++) // 读取数据
+            {
+                data[j] = dataBuffer[dataIndex++];
+            }
+
+            int val;
+            if( (data[0]&0x80)!=0x80 ) //最高位为0，表示输出为整数
+                val = (unsigned int(data[0])<<16) | (unsigned int(data[1])<<8) | (unsigned int(data[2]));
+            else //最高位为1，输出为负数，需要转化为补码
+                val = 0xff000000 | (unsigned int(data[0])<<16) | (unsigned int(data[1])<<8) | (unsigned int(data[2])); //取符号位之后的数值
+
+            channelVol[chIndex++] = double(val) / 0x7FFFFE * 3.3; //转化为电压值
+        }
+    }
+
+    double t = double(counter++) / SAMPLE_Freq;
+
+    dataNum++;
+    for(int i=0;i<8;i++)
+    {
+        sEMGdata[i].append(channelVol[i]);
+        if(ui->NotchFilterCheckBox->isChecked())
+        {
+            channelVol[i]=notchfilters[i].filter(channelVol[i]);
+            channelVol[i]=notchfilters_100[i].filter(channelVol[i]);
+        }
+        if(ui->HpFilterCheckBox->isChecked())
+            channelVol[i]=hpfilters[i].filter(channelVol[i]);
+        if(ui->WaveletFilterCheckBox->isChecked())
+            channelVol[i]=waveletfilters[i].filter(channelVol[i]);
+        filteredsEMGdata[i].append(channelVol[i]);
+    }
+
+    if (SendSerialPort.isOpen())
+    {
+        if(ui->DebugBox->isChecked())
+            ann.debug=true;
+        ann.getdata(channelVol);
+        ui->gesturename->setText(ann.getcurrentgesture());
+        interval++;
+        int currentgestureindex=ann.getcurrentgestureindex();
+        if(currentgestureindex==-1)
+        {
+            gestureindex=currentgestureindex;
+            gestureContinueCounter=0;
+        }
+        else if(currentgestureindex==gestureindex)
+            gestureContinueCounter++;
+        else
+        {
+            gestureindex=currentgestureindex;
+            gestureContinueCounter=1;
+        }
+
+        if(gestureContinueCounter>=50)
+        {
+            if (gestureindex!=lastgestureindex||interval>=300)
+            {
+                sendcommand();
+                interval=0;
+                lastgestureindex=gestureindex;
+            }
+            gestureContinueCounter=0;
+        }
+    }
+    setCustomPlotData(t,channelVol);
+    return true;
+
 }
 
 void MainWindow::sendcommand()
@@ -509,7 +562,6 @@ void MainWindow::on_pushButton_beginReadC_clicked()
     int MaxSigLenIndex=ui->comboBox_MaxSignalLen->currentIndex();
     for (int i=0;i<8;i++)
         waveletfilters[i].setMaxSignalLength(100*(MaxSigLenIndex+1));
-
 
     unsigned char cmd[] = {0x05};
     if (!serialPort.isOpen())
